@@ -141,7 +141,7 @@ export default function TrackPage() {
                     {activeListing.medicineName}
                   </h3>
                   <p className="text-xs text-slate-500">
-                    {activeListing.category} • {activeListing.quantity} strips • MRP: ₹{activeListing.mrp}
+                    {activeListing.category} • {activeListing.quantityValue} {activeListing.quantityUnit}
                   </p>
                 </div>
 
@@ -155,7 +155,7 @@ export default function TrackPage() {
 
               {/* Progress Stepper */}
               <div className="py-6 border-b border-slate-100">
-                <StatusTracker current={activeListing.status} />
+                <StatusTracker status={activeListing.status} />
               </div>
 
               {/* Live Pickup Rider Card if scheduled */}
@@ -165,6 +165,7 @@ export default function TrackPage() {
                     listingId={activeListing.id}
                     pickupDate={activeListing.pickup.date}
                     pickupSlot={activeListing.pickup.slot}
+                    payoutAmount={activeListing.estimatedPrice}
                     status={activeListing.status}
                   />
                 </div>
@@ -268,7 +269,7 @@ export default function TrackPage() {
                   </div>
                   <h4 className="mt-1 text-sm font-bold text-slate-900">{l.medicineName}</h4>
                   <p className="text-[11px] text-slate-500">
-                    {l.category} • {l.quantity} strips • Payout:{" "}
+                    {l.category} • {l.quantityValue} {l.quantityUnit} • Payout:{" "}
                     <strong className="text-emerald-600 font-bold">₹{l.estimatedPrice}</strong>
                   </p>
                 </div>
