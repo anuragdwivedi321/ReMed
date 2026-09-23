@@ -27,7 +27,7 @@ export default function QuickSellHeroSearch() {
   };
 
   return (
-    <div className="mt-4 sm:mt-5 w-full max-w-xl min-w-0">
+    <div className="mt-4 sm:mt-5 w-full max-w-xl min-w-0 overflow-hidden">
       {/* Integrated Single-Row Search Bar */}
       <form
         onSubmit={handleSubmit}
@@ -43,7 +43,7 @@ export default function QuickSellHeroSearch() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search medicine (e.g. Dolo)..."
-          className="flex-1 min-w-0 w-full bg-transparent px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-base text-slate-900 placeholder:text-slate-400 focus:outline-none"
+          className="flex-1 min-w-0 w-full bg-transparent px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-base text-slate-900 placeholder:text-slate-400 focus:outline-none"
         />
         <datalist id="quick-medicine-suggestions">
           {MEDICINE_CATALOG.slice(0, 20).map((m) => (
@@ -53,7 +53,7 @@ export default function QuickSellHeroSearch() {
 
         <button
           type="submit"
-          className="flex items-center gap-1 rounded-xl bg-gradient-to-r from-[#ff6b2b] to-[#f97316] px-3 py-1.5 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-bold text-white shadow-sm hover:brightness-105 active:scale-95 transition-all shrink-0"
+          className="flex items-center gap-1 rounded-xl bg-gradient-to-r from-[#ff6b2b] to-[#f97316] px-3.5 py-1.5 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-bold text-white shadow-sm hover:brightness-105 active:scale-95 transition-all shrink-0"
         >
           <span>Sell</span>
           <ArrowRight size={14} />

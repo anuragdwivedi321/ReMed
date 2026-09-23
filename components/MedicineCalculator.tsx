@@ -147,14 +147,14 @@ export default function MedicineCalculator() {
   }
 
   return (
-    <div className="w-full max-w-full min-w-0 rounded-3xl border border-slate-200/90 bg-gradient-to-br from-white via-sky-50/30 to-blue-50/20 p-4 sm:p-8 lg:p-10 shadow-xl shadow-blue-500/5">
+    <div className="w-full max-w-full min-w-0 overflow-hidden rounded-3xl border border-slate-200/90 bg-gradient-to-br from-white via-sky-50/30 to-blue-50/20 p-4 sm:p-8 lg:p-10 shadow-xl shadow-blue-500/5">
       {/* Title & Badge */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 border-b border-slate-200/80 min-w-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 border-b border-slate-200/80 min-w-0 w-full max-w-full overflow-hidden">
         <div>
           <div className="inline-flex items-center gap-1.5 rounded-lg bg-sky-100 px-3 py-1 text-xs font-bold text-[#0072d2] mb-2">
             <Calculator size={14} /> Instant Buyback Calculator
           </div>
-          <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h3 className="font-display text-xl min-[380px]:text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight break-words">
             Check Your Medicine’s Cashback Value
           </h3>
           <p className="mt-1 text-xs sm:text-sm text-slate-500">
@@ -189,9 +189,9 @@ export default function MedicineCalculator() {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-8 lg:grid-cols-12 lg:items-start">
+      <div className="mt-6 grid gap-8 lg:grid-cols-12 lg:items-start w-full max-w-full min-w-0">
         {/* Left Form: Inputs */}
-        <div className="lg:col-span-7 space-y-5">
+        <div className="lg:col-span-7 space-y-5 w-full max-w-full min-w-0">
           {/* Quick Select Popular Pills */}
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -532,7 +532,7 @@ export default function MedicineCalculator() {
         </div>
 
         {/* Right Output Card with Instant Reactive Counter */}
-        <div className="lg:col-span-5">
+        <div className="lg:col-span-5 w-full max-w-full min-w-0">
           <div className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xl shadow-blue-500/10 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between pb-3 border-b border-slate-100">

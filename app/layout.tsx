@@ -17,6 +17,7 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -35,12 +36,12 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased flex min-h-screen flex-col bg-paper text-ink w-full max-w-full overflow-x-hidden">
+      <body className="antialiased flex min-h-screen flex-col bg-paper text-ink w-full max-w-full min-w-0 overflow-x-hidden">
         <AuthProvider>
           <StoreProvider>
             <LanguageProvider>
               <Navbar />
-              <main className="flex-1 pb-20 lg:pb-0 w-full max-w-full overflow-x-hidden">{children}</main>
+              <main className="flex-1 pb-20 lg:pb-0 w-full max-w-full min-w-0 overflow-x-hidden">{children}</main>
               <Footer />
               <MobileBottomNav />
             </LanguageProvider>

@@ -71,7 +71,7 @@ const TRUST_METRICS = [
 
 export default function Testimonials() {
   return (
-    <section className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 sm:py-8 overflow-hidden">
+    <section className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 sm:py-8 w-full max-w-full min-w-0 overflow-hidden">
       {/* Top Header */}
       <div className="text-center max-w-2xl mx-auto">
         <div className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700 border border-emerald-200 mb-3">
@@ -86,56 +86,58 @@ export default function Testimonials() {
       </div>
 
       {/* Review Cards (Swipeable Carousel on mobile, 3-column grid on desktop) */}
-      <div className="mt-6 sm:mt-10 flex overflow-x-auto gap-3.5 pb-2 snap-x snap-mandatory md:grid md:grid-cols-3 no-scrollbar w-full max-w-full min-w-0">
-        {REVIEWS.map((review) => (
-          <div
-            key={review.id}
-            className="shrink-0 w-[80vw] max-w-sm snap-center md:w-auto flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-7 shadow-lg shadow-blue-500/5 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-w-0"
-          >
-            <div>
-              {/* Rating stars & badge */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-0.5 text-amber-400">
-                  {[...Array(review.rating)].map((_, i) => (
-                    <Star key={i} size={16} className="fill-amber-400" />
-                  ))}
+      <div className="mt-6 sm:mt-10 w-full max-w-full min-w-0 overflow-hidden">
+        <div className="flex overflow-x-auto gap-3.5 pb-2 snap-x snap-mandatory md:grid md:grid-cols-3 no-scrollbar w-full max-w-full min-w-0">
+          {REVIEWS.map((review) => (
+            <div
+              key={review.id}
+              className="shrink-0 w-[82vw] max-w-[320px] snap-center md:w-auto flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-7 shadow-lg shadow-blue-500/5 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-w-0"
+            >
+              <div>
+                {/* Rating stars & badge */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-0.5 text-amber-400">
+                    {[...Array(review.rating)].map((_, i) => (
+                      <Star key={i} size={16} className="fill-amber-400" />
+                    ))}
+                  </div>
+                  <span className="rounded-full bg-sky-50 px-2.5 py-0.5 text-[10px] font-bold text-[#0072d2] border border-sky-100">
+                    {review.savedAmount}
+                  </span>
                 </div>
-                <span className="rounded-full bg-sky-50 px-2.5 py-0.5 text-[10px] font-bold text-[#0072d2] border border-sky-100">
-                  {review.savedAmount}
-                </span>
+
+                {/* Review Text */}
+                <p className="mt-4 text-xs sm:text-sm text-slate-700 leading-relaxed italic">
+                  &ldquo;{review.text}&rdquo;
+                </p>
               </div>
 
-              {/* Review Text */}
-              <p className="mt-4 text-xs sm:text-sm text-slate-700 leading-relaxed italic">
-                &ldquo;{review.text}&rdquo;
-              </p>
-            </div>
-
-            {/* Author profile */}
-            <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#0072d2] to-sky-600 text-xs font-bold text-white shadow-xs">
-                  {review.name.charAt(0)}
+              {/* Author profile */}
+              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#0072d2] to-sky-600 text-xs font-bold text-white shadow-xs">
+                    {review.name.charAt(0)}
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 leading-tight">
+                      {review.name}
+                    </h4>
+                    <p className="text-[10px] text-slate-400">
+                      {review.location} • {review.role}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900 leading-tight">
-                    {review.name}
-                  </h4>
-                  <p className="text-[10px] text-slate-400">
-                    {review.location} • {review.role}
-                  </p>
+                <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                  <CheckCircle2 size={12} /> {review.badge}
                 </div>
               </div>
-              <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
-                <CheckCircle2 size={12} /> {review.badge}
-              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Trust Compliance Strip */}
-      <div className="mt-12 rounded-3xl border border-slate-200 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-5 sm:p-8 text-white shadow-xl min-w-0 w-full overflow-hidden">
+      <div className="mt-12 rounded-3xl border border-slate-200 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-5 sm:p-8 text-white shadow-xl min-w-0 w-full max-w-full overflow-hidden">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 min-w-0">
           {TRUST_METRICS.map((item, i) => {
             const Icon = item.icon;

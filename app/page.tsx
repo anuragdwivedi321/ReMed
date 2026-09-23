@@ -25,14 +25,14 @@ export default function LandingPage() {
       {/* ========================================================= */}
       {/* 1. HERO SECTION                                           */}
       {/* ========================================================= */}
-      <section className="relative pt-4 pb-2 sm:pt-10 md:pt-14 md:pb-6">
+      <section className="relative pt-4 pb-2 sm:pt-10 md:pt-14 md:pb-6 w-full max-w-full min-w-0 overflow-hidden">
         {/* Soft background ambient glows */}
-        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-[450px] w-full max-w-7xl bg-gradient-to-b from-sky-100/50 via-sky-50/20 to-transparent blur-3xl -z-10" />
+        <div className="pointer-events-none absolute -top-24 inset-x-0 mx-auto h-[450px] max-w-5xl bg-gradient-to-b from-sky-100/50 via-sky-50/20 to-transparent blur-2xl -z-10" />
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid items-center gap-8 lg:gap-12 lg:grid-cols-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full max-w-full min-w-0">
+          <div className="grid items-center gap-8 lg:gap-12 lg:grid-cols-12 w-full max-w-full min-w-0">
             {/* Left Content */}
-            <div className="lg:col-span-7 text-center sm:text-left">
+            <div className="lg:col-span-7 text-center sm:text-left w-full max-w-full min-w-0">
               {/* Top pill badge */}
               <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-[11px] sm:text-xs font-bold tracking-wide uppercase text-[#0072d2] mb-3 sm:mb-4">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#0072d2] animate-pulse" />
@@ -194,14 +194,14 @@ export default function LandingPage() {
       {/* ========================================================= */}
       {/* 2. INSTANT BUYBACK CALCULATOR                             */}
       {/* ========================================================= */}
-      <section id="calculator" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section id="calculator" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full max-w-full min-w-0 overflow-hidden">
         <MedicineCalculator />
       </section>
 
       {/* ========================================================= */}
       {/* 3. HOW IT WORKS IN 3 SIMPLE STEPS                         */}
       {/* ========================================================= */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full max-w-full min-w-0 overflow-hidden">
         <div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-10 shadow-xs">
           <div className="text-center max-w-xl mx-auto mb-8 sm:mb-10">
             <span className="rounded-full bg-sky-100 px-3 py-1 text-xs font-bold text-[#0072d2]">
@@ -284,7 +284,7 @@ export default function LandingPage() {
       {/* ========================================================= */}
       {/* 4. VERIFIED STATS COUNTER STRIP                           */}
       {/* ========================================================= */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full max-w-full min-w-0 overflow-hidden">
         <div className="rounded-3xl border border-slate-200/80 bg-white p-5 sm:p-8 shadow-xs">
           <div className="grid gap-4 sm:gap-6 grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-slate-200">
             {/* Stat 1 */}
