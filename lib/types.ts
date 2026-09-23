@@ -48,6 +48,14 @@ export interface PickupDetails {
   pincode: string;
   date: string; // ISO date
   slot: string; // e.g. "10:00 AM - 12:00 PM"
+  addressType?: "home" | "work" | "other";
+  upiId?: string;
+  payoutMode?: "upi" | "bank" | "donate";
+  whatsappAlerts?: boolean;
+  riderName?: string;
+  riderPhone?: string;
+  riderRating?: number;
+  otp?: string;
 }
 
 export interface Listing {

@@ -319,26 +319,31 @@ export default function MedicineForm() {
 
   if (submitted) {
     return (
-      <div className="mx-auto max-w-lg rounded-3xl border border-sky-100 bg-white p-8 text-center shadow-xl shadow-sky-500/10">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 shadow-sm border border-emerald-100">
-          <CheckCircle2 size={32} />
+      <div className="mx-auto max-w-lg rounded-3xl border border-sky-100 bg-white p-7 sm:p-9 text-center shadow-xl shadow-sky-500/10 min-w-0">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 shadow-sm border border-emerald-200">
+          <CheckCircle2 size={34} />
         </div>
-        <h2 className="mt-5 font-display text-2xl font-bold text-slate-900">
-          Submitted for Review!
+        <span className="mt-4 inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">
+          Step 1 Complete: Medicine Verified &amp; Accepted ✓
+        </span>
+        <h2 className="mt-3 font-display text-2xl sm:text-3xl font-extrabold text-slate-900">
+          Ready for Doorstep Pickup!
         </h2>
-        <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-          Our pharmacy-compliance team will confirm the final price within 24 hours. You can track this listing anytime from your dashboard.
+        <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed max-w-sm mx-auto">
+          Your unexpired medicine is accepted for buyback. Now schedule your preferred date, 2-hour time slot, and enter your UPI ID for instant payout.
         </p>
-        <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
+
+        <div className="mt-6 flex flex-col gap-3">
           <button
             onClick={() => router.push(`/dashboard/${submitted}`)}
-            className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#ff6b2b] to-[#f97316] px-6 py-3 text-sm font-bold text-white shadow-md shadow-orange-500/25 hover:brightness-105 transition-all"
+            className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#ff6b2b] to-[#f97316] px-6 py-4 text-sm sm:text-base font-bold text-white shadow-lg shadow-orange-500/25 hover:brightness-105 active:scale-95 transition-all cursor-pointer"
           >
-            Track Listing <ArrowRight size={16} />
+            <span>Proceed to Doorstep Pickup &amp; UPI</span>
+            <ArrowRight size={18} />
           </button>
           <button
             onClick={() => router.push("/dashboard")}
-            className="rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all"
+            className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-all"
           >
             Go to My Listings
           </button>
