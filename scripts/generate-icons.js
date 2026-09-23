@@ -3,36 +3,40 @@ const path = require('path');
 const sharp = require('sharp');
 
 // 512x512 SVG of the official ReMeD Logo Icon
-const svg = `<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+// IMPORTANT: Full-bleed solid background (NO transparent corners) so Android & iOS launchers never render black backgrounds!
+const fullBleedSvg = `<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0080eb" />
-      <stop offset="50%" stop-color="#006bc8" />
-      <stop offset="100%" stop-color="#0050a4" />
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="40%" stop-color="#0072d2" />
+      <stop offset="100%" stop-color="#034b8c" />
     </linearGradient>
     <linearGradient id="leafGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="0%" stop-color="#059669" />
+      <stop offset="50%" stop-color="#10b981" />
       <stop offset="100%" stop-color="#34d399" />
     </linearGradient>
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#002d62" flood-opacity="0.25" />
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#02284d" flood-opacity="0.35" />
     </filter>
   </defs>
 
-  <!-- Background Squircle with subtle border highlight -->
-  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
-  <rect x="4" y="4" width="504" height="504" rx="108" stroke="rgba(255,255,255,0.22)" stroke-width="8" fill="none" />
+  <!-- Solid full-bleed blue gradient background (Guarantees zero black borders on phone screen) -->
+  <rect width="512" height="512" fill="url(#bgGrad)" />
 
-  <!-- Center Medical Cross with Soft Shadow -->
+  <!-- Subtle radial glow behind the cross -->
+  <circle cx="256" cy="256" r="220" fill="#ffffff" fill-opacity="0.08" />
+
+  <!-- Center Medical Cross with Soft Depth Shadow - Fits inside 80% safe zone (r=204.8) -->
   <g filter="url(#shadow)">
+    <!-- White Medical Cross -->
     <path
-      d="M196 68 H316 V172 H420 V292 H316 V444 H196 V292 H92 V172 H196 Z"
+      d="M206 106 H306 V206 H406 V306 H306 V406 H206 V306 H106 V206 H206 Z"
       fill="#FFFFFF"
-      fill-opacity="0.98"
     />
-    <!-- Signature Green Leaf Curl Accent -->
+    <!-- Emerald Green Leaf Accent nestled at top-right corner of the cross -->
     <path
-      d="M298 192 C362 192 420 134 420 70 C356 70 298 128 298 192 Z"
+      d="M290 220 C356 220 412 164 412 98 C346 98 290 154 290 220 Z"
       fill="url(#leafGrad)"
     />
   </g>
@@ -46,7 +50,7 @@ function pngToIco(pngBuffer) {
   icoHeader.writeUInt16LE(1, 4); // Number of images
 
   const entry = Buffer.alloc(16);
-  entry.writeUInt8(48, 0); // Width: 48 (or 0 for 256)
+  entry.writeUInt8(48, 0); // Width: 48
   entry.writeUInt8(48, 1); // Height: 48
   entry.writeUInt8(0, 2);  // Color count
   entry.writeUInt8(0, 3);  // Reserved
@@ -65,34 +69,39 @@ async function run() {
 
   if (!fs.existsSync(pub)) fs.mkdirSync(pub, { recursive: true });
 
-  const svgBuffer = Buffer.from(svg);
+  const svgBuffer = Buffer.from(fullBleedSvg);
 
   // 1. Save SVG
-  fs.writeFileSync(path.join(pub, 'icon.svg'), svg);
-  fs.writeFileSync(path.join(app, 'icon.svg'), svg);
+  fs.writeFileSync(path.join(pub, 'icon.svg'), fullBleedSvg);
+  fs.writeFileSync(path.join(app, 'icon.svg'), fullBleedSvg);
   console.log('Saved icon.svg');
 
-  // 2. Generate PNGs
+  // 2. Generate 512x512 PNGs (both regular and maskable)
   const p512 = await sharp(svgBuffer).resize(512, 512).png().toBuffer();
   fs.writeFileSync(path.join(pub, 'icon-512.png'), p512);
+  fs.writeFileSync(path.join(pub, 'icon-maskable-512.png'), p512);
 
+  // 3. Generate 192x192 PNGs (both regular and maskable)
   const p192 = await sharp(svgBuffer).resize(192, 192).png().toBuffer();
   fs.writeFileSync(path.join(pub, 'icon-192.png'), p192);
+  fs.writeFileSync(path.join(pub, 'icon-maskable-192.png'), p192);
 
+  // 4. Generate Apple Touch Icon (180x180, solid background required by iOS)
   const p180 = await sharp(svgBuffer).resize(180, 180).png().toBuffer();
   fs.writeFileSync(path.join(pub, 'apple-touch-icon.png'), p180);
   fs.writeFileSync(path.join(app, 'apple-icon.png'), p180);
 
+  // 5. Generate Favicons (48x48 and 32x32)
   const p48 = await sharp(svgBuffer).resize(48, 48).png().toBuffer();
   const p32 = await sharp(svgBuffer).resize(32, 32).png().toBuffer();
   fs.writeFileSync(path.join(app, 'icon.png'), p32);
+  fs.writeFileSync(path.join(pub, 'icon.png'), p32);
 
-  // 3. Generate .ico with PNG payload
   const ico48 = pngToIco(p48);
   fs.writeFileSync(path.join(app, 'favicon.ico'), ico48);
   fs.writeFileSync(path.join(pub, 'favicon.ico'), ico48);
 
-  console.log('All icons generated successfully!');
+  console.log('All full-bleed ReMeD brand icons generated successfully with zero transparency!');
 }
 
 run().catch((err) => {
