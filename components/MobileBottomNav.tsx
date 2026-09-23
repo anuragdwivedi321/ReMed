@@ -54,7 +54,7 @@ export default function MobileBottomNav() {
       {/* Fixed Bottom Navigation Bar - Visible on Mobile & Tablet (< lg) */}
       <nav
         aria-label="Mobile Bottom Navigation"
-        className="fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t border-slate-200/90 bg-white/95 backdrop-blur-lg shadow-[0_-4px_20px_rgba(0,0,0,0.08)] safe-area-bottom transition-all w-full max-w-full overflow-hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t border-slate-200/90 bg-white/95 backdrop-blur-lg shadow-[0_-4px_20px_rgba(0,0,0,0.08)] safe-area-bottom transition-all w-full max-w-full overflow-visible"
       >
         <div className="mx-auto flex max-w-md items-center justify-around px-2 py-1.5 sm:py-2 w-full min-w-0">
           {/* 1. Home Tab */}
@@ -100,11 +100,11 @@ export default function MobileBottomNav() {
           {/* 3. CENTER HIGHLIGHTED CTA: Sell Medicine / Book Pickup */}
           <Link
             href="/sell"
-            className="flex flex-col items-center justify-center -mt-5 group active:scale-95 transition-transform"
+            className="flex flex-col items-center justify-center -mt-6 group active:scale-95 transition-transform relative z-10"
           >
             <div
-              className={`flex h-13 w-13 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#ff6b2b] to-[#f97316] text-white shadow-lg shadow-orange-500/35 border-2 border-white transition-all ${
-                isSell ? "ring-2 ring-[#ff6b2b] ring-offset-2 scale-105" : ""
+              className={`flex h-13 w-13 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#ff6b2b] to-[#f97316] text-white shadow-xl shadow-orange-500/35 border-2 border-white ring-4 ring-white transition-all ${
+                isSell ? "ring-[#ff6b2b]/30 scale-105" : ""
               }`}
             >
               <PlusCircle size={28} strokeWidth={2.4} />

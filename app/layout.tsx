@@ -6,6 +6,7 @@ import { LanguageProvider } from "@/lib/languageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import AppSplashScreen from "@/components/AppSplashScreen";
 
 export const metadata: Metadata = {
   title: "ReMeD — For a Safer, Healthier Tomorrow | Check. Track. Stay Safe.",
@@ -44,6 +45,7 @@ export default function RootLayout({
               <main className="flex-1 pb-20 lg:pb-0 w-full max-w-full min-w-0 overflow-x-hidden">{children}</main>
               <Footer />
               <MobileBottomNav />
+              <AppSplashScreen />
             </LanguageProvider>
           </StoreProvider>
         </AuthProvider>
