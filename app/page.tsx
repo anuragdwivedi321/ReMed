@@ -41,10 +41,10 @@ export default function LandingPage() {
 
               {/* Main Headline */}
               <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
-                Sell Unused Medicines.
+                Don&apos;t dump it,
                 <br />
-                <span className="text-[#0072d2]">Doorstep Pickup</span> &amp;{" "}
-                <span className="text-[#ff6b2b]">Cash</span>
+                <span className="text-[#0072d2]">ReMeD</span>{" "}
+                <span className="text-[#ff6b2b]">it.</span>
               </h1>
 
               {/* Concise Subtitle */}
