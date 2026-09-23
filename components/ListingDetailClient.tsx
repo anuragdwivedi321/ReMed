@@ -206,7 +206,7 @@ export default function ListingDetailClient({
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-6 sm:py-12 w-full max-w-full min-w-0">
+    <div className="mx-auto max-w-4xl px-3 sm:px-6 lg:px-8 py-5 sm:py-10 w-full max-w-full min-w-0 overflow-x-hidden">
       <Link
         href="/dashboard"
         className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-500 hover:text-[#0072d2] transition-colors mb-4"
@@ -600,44 +600,44 @@ export default function ListingDetailClient({
                   </label>
 
                   {/* Day Picker Chips */}
-                  <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-3 w-full max-w-full min-w-0">
                     <button
                       type="button"
                       onClick={() => handleDaySelect("today")}
-                      className={`flex flex-col items-center justify-center py-2.5 px-2 rounded-xl text-xs font-bold border transition-all active:scale-95 ${
+                      className={`flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 sm:px-2 rounded-xl text-xs font-bold border transition-all active:scale-95 min-w-0 ${
                         dateMode === "today"
                           ? "bg-[#0072d2] text-white border-[#0072d2] shadow-sm"
                           : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
                       }`}
                     >
-                      <span className="flex items-center gap-1">⚡ Today</span>
-                      <span className="text-[10px] font-medium opacity-80">Express (Fastest)</span>
+                      <span className="flex items-center gap-0.5 sm:gap-1 text-[11px] sm:text-xs truncate">⚡ Today</span>
+                      <span className="text-[9px] sm:text-[10px] font-medium opacity-80 truncate">Express</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => handleDaySelect("tomorrow")}
-                      className={`flex flex-col items-center justify-center py-2.5 px-2 rounded-xl text-xs font-bold border transition-all active:scale-95 ${
+                      className={`flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 sm:px-2 rounded-xl text-xs font-bold border transition-all active:scale-95 min-w-0 ${
                         dateMode === "tomorrow"
                           ? "bg-[#0072d2] text-white border-[#0072d2] shadow-sm"
                           : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
                       }`}
                     >
-                      <span>📅 Tomorrow</span>
-                      <span className="text-[10px] font-medium opacity-80">Next Day</span>
+                      <span className="text-[11px] sm:text-xs truncate">📅 Tomorrow</span>
+                      <span className="text-[9px] sm:text-[10px] font-medium opacity-80 truncate">Next Day</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => handleDaySelect("custom")}
-                      className={`flex flex-col items-center justify-center py-2.5 px-2 rounded-xl text-xs font-bold border transition-all active:scale-95 ${
+                      className={`flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 sm:px-2 rounded-xl text-xs font-bold border transition-all active:scale-95 min-w-0 ${
                         dateMode === "custom"
                           ? "bg-[#0072d2] text-white border-[#0072d2] shadow-sm"
                           : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
                       }`}
                     >
-                      <span>🗓️ Custom</span>
-                      <span className="text-[10px] font-medium opacity-80">Choose Date</span>
+                      <span className="text-[11px] sm:text-xs truncate">🗓️ Custom</span>
+                      <span className="text-[9px] sm:text-[10px] font-medium opacity-80 truncate">Pick Date</span>
                     </button>
                   </div>
 

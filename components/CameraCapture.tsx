@@ -141,24 +141,24 @@ export default function CameraCapture({
   const atLimit = photos.length >= maxPhotos;
 
   return (
-    <div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-bold text-slate-900">{title}</h3>
-          {helperText && <p className="mt-0.5 text-xs text-slate-500">{helperText}</p>}
+    <div className="rounded-3xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-sm w-full max-w-full min-w-0 overflow-hidden">
+      <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="min-w-0 flex-1">
+          <h3 className="text-xs sm:text-sm font-bold text-slate-900 truncate">{title}</h3>
+          {helperText && <p className="mt-0.5 text-[11px] sm:text-xs text-slate-500 truncate">{helperText}</p>}
         </div>
-        <span className="rounded-full bg-sky-100 px-3 py-1 text-xs font-bold text-[#0072d2]">
+        <span className="rounded-full bg-sky-100 px-2.5 py-0.5 text-[11px] font-bold text-[#0072d2] shrink-0">
           {photos.length}/{maxPhotos}
         </span>
       </div>
 
       {/* Thumbnails */}
       {photos.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2.5">
+        <div className="mt-3 flex flex-wrap gap-2 min-w-0">
           {photos.map((photo) => (
             <div
               key={photo.id}
-              className="relative h-20 w-20 overflow-hidden rounded-2xl border border-sky-200 shadow-xs"
+              className="relative h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-2xl border border-sky-200 shadow-xs shrink-0"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -180,29 +180,29 @@ export default function CameraCapture({
       )}
 
       {!atLimit && (
-        <div className="mt-4">
+        <div className="mt-3 w-full max-w-full min-w-0">
           {streaming ? (
-            <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-950 shadow-md">
+            <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-950 shadow-md w-full max-w-full">
               <video
                 ref={videoRef}
-                className="aspect-video w-full object-cover"
+                className="aspect-video w-full max-w-full object-cover"
                 playsInline
                 muted
               />
-              <div className="flex items-center justify-center gap-3 bg-slate-900 p-3">
+              <div className="flex items-center justify-center gap-2 bg-slate-900 p-2.5">
                 <button
                   type="button"
                   onClick={snap}
-                  className="flex items-center gap-2 rounded-xl bg-[#0072d2] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#005bb5] transition-all"
+                  className="flex items-center gap-1.5 rounded-xl bg-[#0072d2] px-3.5 py-2 text-xs font-bold text-white hover:bg-[#005bb5] transition-all"
                 >
-                  <Camera size={16} /> Capture Photo
+                  <Camera size={14} /> Capture Photo
                 </button>
                 <button
                   type="button"
                   onClick={stopStream}
-                  className="flex items-center gap-1.5 rounded-xl border border-white/30 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 transition-colors"
+                  className="flex items-center gap-1 rounded-xl border border-white/30 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10 transition-colors"
                 >
-                  <RotateCcw size={15} /> Cancel
+                  <RotateCcw size={13} /> Cancel
                 </button>
               </div>
             </div>
@@ -218,42 +218,42 @@ export default function CameraCapture({
                 setDragOver(false);
                 handleFiles(e.dataTransfer.files);
               }}
-              className={`flex flex-col items-center gap-2 rounded-2xl border-2 border-dashed p-6 text-center transition-all ${
+              className={`flex flex-col items-center gap-1.5 sm:gap-2 rounded-2xl border-2 border-dashed p-4 sm:p-5 text-center transition-all w-full max-w-full min-w-0 ${
                 dragOver
                   ? "border-[#0072d2] bg-sky-50/60"
                   : "border-slate-200 bg-slate-50/50 hover:bg-sky-50/30"
               }`}
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 text-[#0072d2] mb-1">
-                <ImagePlus size={24} />
+              <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl bg-sky-100 text-[#0072d2]">
+                <ImagePlus size={20} />
               </div>
-              <p className="text-xs font-semibold text-slate-700">
-                Drag &amp; drop a photo here, or use the buttons below
+              <p className="text-xs font-semibold text-slate-700 leading-snug">
+                Drag &amp; drop a photo, or choose below
               </p>
-              <p className="text-[11px] text-slate-400">
-                Supports JPG, PNG, or WEBP up to 12 MB
+              <p className="text-[10px] text-slate-400">
+                Supports JPG, PNG, WEBP (Max 12 MB)
               </p>
 
-              <div className="mt-2 flex flex-wrap justify-center gap-2.5">
+              <div className="mt-1 flex flex-wrap justify-center items-center gap-2 w-full max-w-full">
                 <label
                   htmlFor={`${inputId}-native-camera`}
-                  className="flex cursor-pointer items-center gap-2 rounded-xl bg-gradient-to-r from-[#ff6b2b] to-[#f97316] px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:brightness-105 active:scale-95 transition-all"
+                  className="flex cursor-pointer items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#ff6b2b] to-[#f97316] px-3 py-2 text-xs font-bold text-white shadow-2xs hover:brightness-105 active:scale-95 transition-all"
                 >
-                  <Camera size={16} /> Take Photo
+                  <Camera size={14} /> Take Photo
                 </label>
                 <label
                   htmlFor={inputId}
                   aria-disabled={processingFiles}
-                  className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:border-[#0072d2] hover:text-[#0072d2] active:scale-95 transition-all shadow-xs"
+                  className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:border-[#0072d2] hover:text-[#0072d2] active:scale-95 transition-all shadow-2xs"
                 >
-                  <Upload size={16} /> Upload from Gallery
+                  <Upload size={14} /> Upload
                 </label>
                 <button
                   type="button"
                   onClick={startCamera}
-                  className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                  className="hidden min-[480px]:inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
                 >
-                  <Camera size={14} /> WebCam
+                  <Camera size={13} /> WebCam
                 </button>
               </div>
 

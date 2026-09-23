@@ -353,8 +353,8 @@ export default function MedicineForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto grid max-w-4xl gap-6 lg:grid-cols-[1.3fr_1fr] pb-32 lg:pb-0">
-      <div className="space-y-5">
+    <form onSubmit={handleSubmit} className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[1.4fr_1fr] pb-32 lg:pb-0 w-full max-w-full min-w-0 overflow-x-hidden">
+      <div className="space-y-5 w-full max-w-full min-w-0">
         <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm">
           <label className="block text-sm font-bold text-slate-900" htmlFor="medicineName">
             Medicine Name
@@ -708,22 +708,25 @@ export default function MedicineForm() {
           </div>
         </div>
 
-        <CameraCapture
-          label="package"
-          title="Photo of Strip or Box"
-          helperText="Show the medicine name and dosage clearly."
-          photos={packagePhotos}
-          onChange={setPackagePhotos}
-        />
+        {/* 2-Column Photo Upload Grid: Places Close-up of Expiry Date side-by-side in the empty space on desktop, 1-col on mobile */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-full min-w-0">
+          <CameraCapture
+            label="package"
+            title="Photo of Strip or Box"
+            helperText="Show the medicine name and dosage clearly."
+            photos={packagePhotos}
+            onChange={setPackagePhotos}
+          />
 
-        <CameraCapture
-          label="expiry"
-          title="Close-up of Expiry Date"
-          helperText="Our AI scanner will read the date automatically."
-          photos={expiryPhotos}
-          onChange={setExpiryPhotos}
-          maxPhotos={2}
-        />
+          <CameraCapture
+            label="expiry"
+            title="Close-up of Expiry Date"
+            helperText="Our AI scanner will read the date automatically."
+            photos={expiryPhotos}
+            onChange={setExpiryPhotos}
+            maxPhotos={2}
+          />
+        </div>
 
         {ocrMessage && (
           <div
@@ -743,8 +746,8 @@ export default function MedicineForm() {
       </div>
 
       {/* Right Column: Price Estimator Panel */}
-      <div className="lg:sticky lg:top-24 lg:h-fit">
-        <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xl shadow-blue-500/5">
+      <div className="lg:sticky lg:top-24 lg:h-fit w-full max-w-full min-w-0">
+        <div className="rounded-3xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xl shadow-blue-500/5 w-full max-w-full min-w-0">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-bold text-slate-900">Estimated Price</h3>
             <span className="rounded-full bg-sky-100 px-2.5 py-0.5 text-xs font-bold text-[#0072d2]">
