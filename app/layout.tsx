@@ -1,0 +1,52 @@
+import type { Metadata } from "next";
+import "./globals.css";
+import { AuthProvider } from "@/lib/auth";
+import { StoreProvider } from "@/lib/store";
+import { LanguageProvider } from "@/lib/languageContext";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import MobileBottomNav from "@/components/MobileBottomNav";
+
+export const metadata: Metadata = {
+  title: "ReMeD — For a Safer, Healthier Tomorrow | Check. Track. Stay Safe.",
+  description:
+    "A smarter way to manage and reuse medicines. Get expiry alerts, scan strips, sell or donate unused unexpired medicines responsibly.",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="antialiased flex min-h-screen flex-col bg-paper text-ink">
+        <AuthProvider>
+          <StoreProvider>
+            <LanguageProvider>
+              <Navbar />
+              <main className="flex-1 pb-20 lg:pb-0">{children}</main>
+              <Footer />
+              <MobileBottomNav />
+            </LanguageProvider>
+          </StoreProvider>
+        </AuthProvider>
+      </body>
+    </html>
+  );
+}
