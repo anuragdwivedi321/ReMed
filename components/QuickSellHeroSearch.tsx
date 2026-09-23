@@ -27,23 +27,23 @@ export default function QuickSellHeroSearch() {
   };
 
   return (
-    <div className="mt-4 sm:mt-5 w-full max-w-xl">
+    <div className="mt-4 sm:mt-5 w-full max-w-xl min-w-0">
       {/* Integrated Single-Row Search Bar */}
       <form
         onSubmit={handleSubmit}
-        className="relative flex items-center rounded-2xl bg-white border-2 border-slate-200/90 p-1.5 shadow-md shadow-sky-500/5 focus-within:border-[#0072d2] focus-within:ring-4 focus-within:ring-sky-100 transition-all"
+        className="relative flex items-center w-full max-w-full min-w-0 rounded-2xl bg-white border-2 border-slate-200/90 p-1 sm:p-1.5 shadow-md shadow-sky-500/5 focus-within:border-[#0072d2] focus-within:ring-4 focus-within:ring-sky-100 transition-all"
       >
         <Search
-          size={19}
-          className="ml-2.5 text-slate-400 shrink-0 pointer-events-none"
+          size={18}
+          className="ml-2 sm:ml-2.5 text-slate-400 shrink-0 pointer-events-none"
         />
         <input
           type="text"
           list="quick-medicine-suggestions"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search medicine to sell (e.g. Dolo 650)..."
-          className="w-full bg-transparent px-3 py-2 text-sm sm:text-base text-slate-900 placeholder:text-slate-400 focus:outline-none"
+          placeholder="Search medicine (e.g. Dolo)..."
+          className="flex-1 min-w-0 w-full bg-transparent px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-base text-slate-900 placeholder:text-slate-400 focus:outline-none"
         />
         <datalist id="quick-medicine-suggestions">
           {MEDICINE_CATALOG.slice(0, 20).map((m) => (
@@ -53,7 +53,7 @@ export default function QuickSellHeroSearch() {
 
         <button
           type="submit"
-          className="flex items-center gap-1 rounded-xl bg-gradient-to-r from-[#ff6b2b] to-[#f97316] px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-bold text-white shadow-sm hover:brightness-105 active:scale-95 transition-all shrink-0"
+          className="flex items-center gap-1 rounded-xl bg-gradient-to-r from-[#ff6b2b] to-[#f97316] px-3 py-1.5 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-bold text-white shadow-sm hover:brightness-105 active:scale-95 transition-all shrink-0"
         >
           <span>Sell</span>
           <ArrowRight size={14} />
@@ -61,7 +61,7 @@ export default function QuickSellHeroSearch() {
       </form>
 
       {/* Popular quick chips */}
-      <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-1 text-xs text-slate-500 no-scrollbar">
+      <div className="mt-2.5 flex items-center gap-1.5 w-full max-w-full min-w-0 overflow-x-auto pb-1 text-xs text-slate-500 no-scrollbar">
         <span className="shrink-0 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
           Trending:
         </span>

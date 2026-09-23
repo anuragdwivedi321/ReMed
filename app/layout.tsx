@@ -35,12 +35,12 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased flex min-h-screen flex-col bg-paper text-ink">
+      <body className="antialiased flex min-h-screen flex-col bg-paper text-ink w-full max-w-full overflow-x-hidden">
         <AuthProvider>
           <StoreProvider>
             <LanguageProvider>
               <Navbar />
-              <main className="flex-1 pb-20 lg:pb-0">{children}</main>
+              <main className="flex-1 pb-20 lg:pb-0 w-full max-w-full overflow-x-hidden">{children}</main>
               <Footer />
               <MobileBottomNav />
             </LanguageProvider>

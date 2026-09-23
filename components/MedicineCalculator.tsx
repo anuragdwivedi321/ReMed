@@ -147,9 +147,9 @@ export default function MedicineCalculator() {
   }
 
   return (
-    <div className="w-full rounded-3xl border border-slate-200/90 bg-gradient-to-br from-white via-sky-50/30 to-blue-50/20 p-5 sm:p-8 lg:p-10 shadow-xl shadow-blue-500/5">
+    <div className="w-full max-w-full min-w-0 rounded-3xl border border-slate-200/90 bg-gradient-to-br from-white via-sky-50/30 to-blue-50/20 p-4 sm:p-8 lg:p-10 shadow-xl shadow-blue-500/5">
       {/* Title & Badge */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 border-b border-slate-200/80">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 border-b border-slate-200/80 min-w-0">
         <div>
           <div className="inline-flex items-center gap-1.5 rounded-lg bg-sky-100 px-3 py-1 text-xs font-bold text-[#0072d2] mb-2">
             <Calculator size={14} /> Instant Buyback Calculator
@@ -545,37 +545,37 @@ export default function MedicineCalculator() {
                 </span>
               </div>
 
-              <div className="mt-4 space-y-2.5 text-xs text-slate-600">
-                <div className="flex justify-between">
-                  <span>Selected Medicine:</span>
-                  <span className={`font-bold truncate max-w-[190px] ${hasMedicine ? "text-slate-900" : "text-slate-400"}`}>
+              <div className="mt-4 space-y-2.5 text-xs text-slate-600 min-w-0">
+                <div className="flex justify-between items-center gap-2 min-w-0">
+                  <span className="shrink-0">Selected Medicine:</span>
+                  <span className={`font-bold truncate max-w-[140px] sm:max-w-[190px] text-right ${hasMedicine ? "text-slate-900" : "text-slate-400"}`}>
                     {hasMedicine ? searchQuery : "None (Select first)"}
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span>Formula Breakdown:</span>
+                <div className="flex justify-between items-center gap-2 min-w-0">
+                  <span className="shrink-0">Formula Breakdown:</span>
                   {!hasMedicine ? (
-                    <span className="text-amber-600/90 font-medium text-[11px]">
+                    <span className="text-amber-600/90 font-medium text-[11px] truncate text-right">
                       Select medicine name first
                     </span>
                   ) : effectiveMrp > 0 ? (
-                    <span className="font-mono font-semibold text-slate-600">
+                    <span className="font-mono font-semibold text-slate-600 text-right">
                       {stripsCount} × ₹{effectiveMrp} × {Math.round(rateMultiplier * 100)}%
                     </span>
                   ) : (
-                    <span className="text-slate-400 font-medium text-[11px]">
+                    <span className="text-slate-400 font-medium text-[11px] truncate text-right">
                       Enter strip MRP to calculate
                     </span>
                   )}
                 </div>
-                <div className="flex justify-between">
-                  <span>Total Retail Value (MRP):</span>
+                <div className="flex justify-between items-center gap-2 min-w-0">
+                  <span className="shrink-0">Total Retail Value (MRP):</span>
                   <span className="font-mono font-bold text-slate-900">
                     {isReady ? `₹${totalMrp}` : "₹0"}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Doorstep Pickup Fee:</span>
+                <div className="flex justify-between items-center gap-2 min-w-0">
+                  <span className="shrink-0">Doorstep Pickup Fee:</span>
                   <span className="font-bold text-emerald-600">FREE (₹0)</span>
                 </div>
               </div>

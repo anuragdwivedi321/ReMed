@@ -266,14 +266,14 @@ export default function LandingPage() {
           </div>
 
           {/* Learn more link */}
-          <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600">
-            <span className="flex items-center gap-2">
-              <ShieldCheck size={16} className="text-emerald-600" />
-              100% CDSCO Compliant &bull; Licensed Pharmacy Network &bull; Zero Landfill Guarantee
+          <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600 min-w-0">
+            <span className="flex items-center gap-2 flex-wrap min-w-0 break-words text-center sm:text-left">
+              <ShieldCheck size={16} className="text-emerald-600 shrink-0" />
+              <span>100% CDSCO Compliant &bull; Licensed Pharmacy Network &bull; Zero Landfill Guarantee</span>
             </span>
             <Link
               href="/about"
-              className="font-bold text-[#0072d2] hover:underline flex items-center gap-1"
+              className="font-bold text-[#0072d2] hover:underline flex items-center gap-1 shrink-0"
             >
               Read full safety &amp; compliance standards <ArrowRight size={13} />
             </Link>
@@ -329,21 +329,23 @@ export default function LandingPage() {
             </div>
 
             {/* Stat 4 */}
-            <div className="flex items-center justify-between gap-2 lg:px-4">
-              <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex flex-col justify-center gap-2 lg:px-4 min-w-0">
+              <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
                 <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl bg-teal-100 text-teal-700">
                   <Sparkles size={20} className="sm:h-6 sm:w-6" />
                 </div>
-                <div>
-                  <p className="font-display text-sm sm:text-base font-extrabold text-slate-900">
+                <div className="min-w-0">
+                  <p className="font-display text-sm sm:text-base font-extrabold text-slate-900 truncate">
                     Eco Impact
                   </p>
-                  <p className="text-[10px] sm:text-xs font-medium text-slate-500">
+                  <p className="text-[10px] sm:text-xs font-medium text-slate-500 truncate">
                     Zero Landfill
                   </p>
                 </div>
               </div>
-              <ImpactCertificateButton label="View Impact" />
+              <div className="pt-0.5">
+                <ImpactCertificateButton label="View Impact" />
+              </div>
             </div>
           </div>
         </div>

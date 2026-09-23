@@ -71,7 +71,7 @@ const TRUST_METRICS = [
 
 export default function Testimonials() {
   return (
-    <section className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+    <section className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 sm:py-8 overflow-hidden">
       {/* Top Header */}
       <div className="text-center max-w-2xl mx-auto">
         <div className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700 border border-emerald-200 mb-3">
@@ -86,11 +86,11 @@ export default function Testimonials() {
       </div>
 
       {/* Review Cards (Swipeable Carousel on mobile, 3-column grid on desktop) */}
-      <div className="mt-6 sm:mt-10 flex overflow-x-auto gap-3.5 pb-2 snap-x snap-mandatory md:grid md:grid-cols-3 no-scrollbar">
+      <div className="mt-6 sm:mt-10 flex overflow-x-auto gap-3.5 pb-2 snap-x snap-mandatory md:grid md:grid-cols-3 no-scrollbar w-full max-w-full min-w-0">
         {REVIEWS.map((review) => (
           <div
             key={review.id}
-            className="shrink-0 w-[82vw] max-w-sm snap-center md:w-auto flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-7 shadow-lg shadow-blue-500/5 hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
+            className="shrink-0 w-[80vw] max-w-sm snap-center md:w-auto flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-7 shadow-lg shadow-blue-500/5 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-w-0"
           >
             <div>
               {/* Rating stars & badge */}
@@ -135,16 +135,16 @@ export default function Testimonials() {
       </div>
 
       {/* Trust Compliance Strip */}
-      <div className="mt-12 rounded-3xl border border-slate-200 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-6 sm:p-8 text-white shadow-xl">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-12 rounded-3xl border border-slate-200 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-5 sm:p-8 text-white shadow-xl min-w-0 w-full overflow-hidden">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 min-w-0">
           {TRUST_METRICS.map((item, i) => {
             const Icon = item.icon;
             return (
-              <div key={i} className="flex items-start gap-3">
+              <div key={i} className="flex items-start gap-3 min-w-0">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-500/20 text-sky-300 border border-sky-400/30">
                   <Icon size={20} />
                 </div>
-                <div>
+                <div className="min-w-0 break-words">
                   <h3 className="text-xs sm:text-sm font-bold text-white">
                     {item.title}
                   </h3>
