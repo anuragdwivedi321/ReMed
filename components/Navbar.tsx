@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { createPortal } from "react-dom";
 import { Menu, X, ArrowRight, Shield } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useLanguage } from "@/lib/languageContext";
@@ -59,9 +60,14 @@ const LINKS = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const { user, signOut } = useAuth();
   const { language, setLanguage, t } = useLanguage();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close mobile drawer on route change
   const [prevPathname, setPrevPathname] = useState(pathname);
@@ -83,7 +89,7 @@ export default function Navbar() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-md transition-all w-full max-w-full min-w-0 overflow-x-hidden">
+    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-md transition-all w-full max-w-full min-w-0">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 w-full min-w-0">
         <Link href="/" aria-label="ReMeD home" className="outline-none focus-visible:ring-2 focus-visible:ring-[#0072d2] rounded-xl shrink-0">
           <ReMedLogo />
@@ -149,6 +155,7 @@ export default function Navbar() {
 
           {user ? (
             <button
+              type="button"
               onClick={signOut}
               className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition-all hover:border-slate-400 hover:bg-slate-50"
             >
@@ -196,7 +203,8 @@ export default function Navbar() {
           </div>
 
           <button
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 active:scale-95 transition-all"
+            type="button"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 active:scale-95 transition-all shadow-2xs"
             aria-label={open ? "Close menu" : "Open menu"}
             onClick={() => setOpen((o) => !o)}
           >
@@ -205,72 +213,100 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Drawer (with backdrop blur & touch scrolling) */}
-      {open && (
-        <div className="fixed inset-x-0 top-[60px] sm:top-[65px] bottom-0 z-40 bg-slate-900/40 backdrop-blur-xs lg:hidden animate-in fade-in duration-150">
-          <div className="max-h-[calc(100vh-65px)] overflow-y-auto border-b border-slate-200 bg-white px-5 py-5 shadow-2xl animate-in slide-in-from-top-2 duration-200">
-            <nav className="flex flex-col gap-1">
-              {LINKS.map((link) => {
-                const isActive = pathname === link.href;
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className={`flex items-center justify-between rounded-xl px-4 py-3 text-base font-bold transition-colors ${
-                      isActive
-                        ? "bg-sky-50 text-[#0072d2]"
-                        : "text-slate-700 hover:bg-slate-50"
-                    }`}
-                  >
-                    <span>{language === "hi" ? link.labelHi : link.labelEn}</span>
-                    {isActive && <span className="h-2 w-2 rounded-full bg-[#0072d2]" />}
-                  </Link>
-                );
-              })}
+      {/* Mobile Drawer Rendered via Portal directly into document.body to bypass header backdrop-filter clipping */}
+      {open && mounted && createPortal(
+        <div className="fixed inset-0 z-[100] lg:hidden flex flex-col animate-in fade-in duration-200">
+          {/* Backdrop Blur Overlay */}
+          <div
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+            onClick={() => setOpen(false)}
+            aria-hidden="true"
+          />
 
-              {user?.isAdmin && (
-                <Link
-                  href="/admin"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-2 rounded-xl px-4 py-3 text-base font-bold text-purple-700 hover:bg-purple-50"
-                >
-                  <Shield size={16} /> Admin Review Queue
-                </Link>
-              )}
+          {/* Drawer Top Modal Panel */}
+          <div className="relative z-10 flex flex-col w-full max-h-[90vh] bg-white rounded-b-3xl shadow-2xl border-b border-slate-200 overflow-hidden animate-in slide-in-from-top duration-250">
+            {/* Drawer Header */}
+            <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-100 bg-slate-50/80">
+              <Link href="/" onClick={() => setOpen(false)}>
+                <ReMedLogo />
+              </Link>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="flex h-9 w-9 items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 active:scale-95 transition-all shadow-2xs"
+                aria-label="Close menu"
+              >
+                <X size={20} />
+              </button>
+            </div>
 
-              <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-3">
-                {user ? (
-                  <button
-                    onClick={() => {
-                      signOut();
-                      setOpen(false);
-                    }}
-                    className="w-full rounded-xl border border-slate-300 py-3 text-center text-sm font-bold text-slate-700 hover:bg-slate-50"
-                  >
-                    {t("Sign out", "लॉग आउट")}
-                  </button>
-                ) : (
+            {/* Nav Links Body */}
+            <div className="overflow-y-auto px-4 py-3 space-y-1">
+              <nav className="flex flex-col gap-1">
+                {LINKS.map((link) => {
+                  const isActive = pathname === link.href;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                      className={`flex items-center justify-between rounded-xl px-4 py-2.5 text-base font-bold transition-colors ${
+                        isActive
+                          ? "bg-sky-50 text-[#0072d2]"
+                          : "text-slate-700 hover:bg-slate-50 active:bg-slate-100"
+                      }`}
+                    >
+                      <span>{language === "hi" ? link.labelHi : link.labelEn}</span>
+                      {isActive && <span className="h-2 w-2 rounded-full bg-[#0072d2]" />}
+                    </Link>
+                  );
+                })}
+
+                {user?.isAdmin && (
                   <Link
-                    href="/login"
+                    href="/admin"
                     onClick={() => setOpen(false)}
-                    className="w-full rounded-xl border border-[#0072d2]/40 py-3 text-center text-sm font-bold text-[#0072d2] hover:bg-sky-50"
+                    className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-base font-bold text-purple-700 hover:bg-purple-50"
                   >
-                    {t("Login", "लॉगिन")}
+                    <Shield size={16} /> Admin Review Queue
                   </Link>
                 )}
 
-                <Link
-                  href="/sell"
-                  onClick={() => setOpen(false)}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#ff6b2b] to-[#f97316] py-3.5 text-center text-sm font-bold text-white shadow-md shadow-orange-500/25 active:scale-95"
-                >
-                  {t("Sell Medicines", "दवाई बेचें")} <ArrowRight size={16} />
-                </Link>
-              </div>
-            </nav>
+                <div className="mt-3 pt-3 border-t border-slate-100 flex flex-col gap-2.5 pb-2">
+                  {user ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        signOut();
+                        setOpen(false);
+                      }}
+                      className="w-full rounded-xl border border-slate-300 py-3 text-center text-sm font-bold text-slate-700 hover:bg-slate-50"
+                    >
+                      {t("Sign out", "लॉग आउट")}
+                    </button>
+                  ) : (
+                    <Link
+                      href="/login"
+                      onClick={() => setOpen(false)}
+                      className="w-full rounded-xl border border-[#0072d2]/40 py-3 text-center text-sm font-bold text-[#0072d2] hover:bg-sky-50"
+                    >
+                      {t("Login", "लॉगिन")}
+                    </Link>
+                  )}
+
+                  <Link
+                    href="/sell"
+                    onClick={() => setOpen(false)}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#ff6b2b] to-[#f97316] py-3.5 text-center text-sm font-bold text-white shadow-md shadow-orange-500/25 active:scale-95"
+                  >
+                    {t("Sell Medicines", "दवाई बेचें")} <ArrowRight size={16} />
+                  </Link>
+                </div>
+              </nav>
+            </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </header>
   );
