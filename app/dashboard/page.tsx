@@ -25,7 +25,7 @@ export default function DashboardPage() {
   const showSeedNote = !loading && listings.length > 0 && !user;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
+    <div className="w-full max-w-5xl min-w-0 overflow-x-hidden mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900">
@@ -81,7 +81,7 @@ export default function DashboardPage() {
             <Link
               key={listing.id}
               href={`/dashboard/${listing.id}`}
-              className="group block rounded-3xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-sm transition-all duration-200 hover:border-sky-300 hover:shadow-md hover:shadow-blue-500/5"
+              className="group block rounded-3xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-sm transition-all duration-200 hover:border-sky-300 hover:shadow-md hover:shadow-blue-500/5 w-full max-w-full min-w-0 overflow-hidden"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>

@@ -16,8 +16,8 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="mx-auto grid max-w-5xl gap-8 sm:gap-10 px-4 sm:px-6 lg:px-8 py-8 sm:py-16 md:grid-cols-2 items-center">
-      <div>
+    <div className="w-full max-w-5xl min-w-0 overflow-x-hidden mx-auto grid gap-8 sm:gap-10 px-4 sm:px-6 lg:px-8 py-8 sm:py-16 md:grid-cols-2 items-center">
+      <div className="min-w-0">
         <span className="rounded-full bg-sky-100 px-3.5 py-1 text-xs font-bold text-[#0072d2]">
           Support &amp; Inquiries
         </span>

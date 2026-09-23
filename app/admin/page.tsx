@@ -16,7 +16,7 @@ export default function AdminPage() {
 
   if (!user?.isAdmin) {
     return (
-      <div className="mx-auto max-w-md px-5 py-24 text-center">
+      <div className="w-full max-w-md min-w-0 overflow-x-hidden mx-auto px-5 py-24 text-center">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-600 mb-4 border border-red-200">
           <ShieldAlert size={28} />
         </div>
@@ -35,7 +35,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
+    <div className="w-full max-w-7xl min-w-0 overflow-x-hidden mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-bold text-purple-700">

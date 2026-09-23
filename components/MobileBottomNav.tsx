@@ -54,9 +54,9 @@ export default function MobileBottomNav() {
       {/* Fixed Bottom Navigation Bar - Visible on Mobile & Tablet (< lg) */}
       <nav
         aria-label="Mobile Bottom Navigation"
-        className="fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t border-slate-200/90 bg-white/95 backdrop-blur-lg shadow-[0_-4px_20px_rgba(0,0,0,0.08)] safe-area-bottom transition-all"
+        className="fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t border-slate-200/90 bg-white/95 backdrop-blur-lg shadow-[0_-4px_20px_rgba(0,0,0,0.08)] safe-area-bottom transition-all w-full max-w-full overflow-hidden"
       >
-        <div className="mx-auto flex max-w-md items-center justify-around px-2 py-1.5 sm:py-2">
+        <div className="mx-auto flex max-w-md items-center justify-around px-2 py-1.5 sm:py-2 w-full min-w-0">
           {/* 1. Home Tab */}
           <Link
             href="/"

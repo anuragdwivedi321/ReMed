@@ -26,18 +26,18 @@ export default function StatusTracker({ status }: { status: ListingStatus }) {
           const done = i <= currentIndex;
           const isCurrent = i === currentIndex;
           return (
-            <li key={step} className="flex flex-col items-center gap-1 sm:gap-1.5 px-0.5">
+            <li key={step} className="flex flex-col items-center gap-1 sm:gap-1.5 px-0.5 min-w-0">
               {done ? (
-                <div className="flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-[#0072d2] text-white">
+                <div className="flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-[#0072d2] text-white shrink-0">
                   <CheckCircle2 size={13} className="sm:h-4 sm:w-4" />
                 </div>
               ) : (
-                <div className="flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-slate-200 text-slate-400">
+                <div className="flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-slate-200 text-slate-400 shrink-0">
                   <Circle size={11} className="sm:h-3.5 sm:w-3.5" />
                 </div>
               )}
               <span
-                className={`text-[9px] min-[400px]:text-[10px] sm:text-[11px] leading-tight transition-colors line-clamp-2 sm:line-clamp-none ${
+                className={`text-[9px] min-[400px]:text-[10px] sm:text-[11px] leading-tight transition-colors line-clamp-2 sm:line-clamp-none break-words w-full text-center ${
                   isCurrent
                     ? "font-extrabold text-[#0072d2]"
                     : done

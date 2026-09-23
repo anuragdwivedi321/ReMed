@@ -4,7 +4,7 @@ import { Sparkles, Loader2 } from "lucide-react";
 
 export default function SellPage() {
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
+    <div className="w-full max-w-6xl min-w-0 overflow-x-hidden mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
       <div className="mx-auto max-w-2xl text-center">
         <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-3.5 py-1 text-xs font-bold text-[#0072d2] mb-3">
           <Sparkles size={14} /> Instant Estimate &amp; Doorstep Pickup

@@ -15,7 +15,7 @@ import {
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
+    <div className="w-full max-w-5xl min-w-0 overflow-x-hidden mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
       {/* Hero Header */}
       <div className="text-center max-w-2xl mx-auto">
         <span className="rounded-full bg-sky-100 px-3.5 py-1 text-xs font-bold text-[#0072d2]">

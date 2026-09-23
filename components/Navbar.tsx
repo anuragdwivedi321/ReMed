@@ -83,9 +83,9 @@ export default function Navbar() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-md transition-all">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 py-3">
-        <Link href="/" aria-label="ReMeD home" className="outline-none focus-visible:ring-2 focus-visible:ring-[#0072d2] rounded-xl">
+    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-md transition-all w-full max-w-full min-w-0 overflow-x-hidden">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 w-full min-w-0">
+        <Link href="/" aria-label="ReMeD home" className="outline-none focus-visible:ring-2 focus-visible:ring-[#0072d2] rounded-xl shrink-0">
           <ReMedLogo />
         </Link>
 

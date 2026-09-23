@@ -16,8 +16,8 @@ export default function Footer() {
   }
 
   return (
-    <footer className="border-t border-slate-200/80 bg-white">
-      <div className="mx-auto max-w-7xl px-5 py-6 sm:py-16">
+    <footer className="border-t border-slate-200/80 bg-white w-full max-w-full min-w-0 overflow-x-hidden">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-16 w-full min-w-0">
         {/* Mobile Compact Footer */}
         <div className="md:hidden text-center py-2 space-y-3">
           <Link href="/" aria-label="ReMeD home" className="inline-block">

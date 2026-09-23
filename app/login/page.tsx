@@ -39,7 +39,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center px-4 sm:px-6 py-10 sm:py-24">
+    <div className="w-full max-w-md min-w-0 overflow-x-hidden mx-auto flex flex-col items-center px-4 sm:px-6 py-10 sm:py-24">
       <div className="w-full rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-xl shadow-blue-500/5">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-50 text-[#0072d2] border border-sky-100 shadow-xs">
           {step === "identifier" ? (

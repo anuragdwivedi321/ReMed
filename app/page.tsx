@@ -21,7 +21,7 @@ import {
 
 export default function LandingPage() {
   return (
-    <div className="flex flex-col gap-10 sm:gap-14 md:gap-20 overflow-hidden">
+    <div className="flex flex-col gap-10 sm:gap-14 md:gap-20 w-full max-w-full min-w-0 overflow-x-hidden">
       {/* ========================================================= */}
       {/* 1. HERO SECTION                                           */}
       {/* ========================================================= */}

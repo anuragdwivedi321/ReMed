@@ -55,7 +55,7 @@ export default function TrackPage() {
   };
 
   return (
-    <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 sm:py-14">
+    <div className="w-full max-w-4xl min-w-0 overflow-x-hidden mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14">
       {/* Header */}
       <div className="text-center max-w-xl mx-auto">
         <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 border border-sky-200 px-3.5 py-1 text-xs font-bold text-[#0072d2]">
@@ -73,8 +73,8 @@ export default function TrackPage() {
       </div>
 
       {/* Search Bar */}
-      <form onSubmit={handleSearch} className="mt-8 max-w-lg mx-auto">
-        <div className="relative flex items-center">
+      <form onSubmit={handleSearch} className="mt-8 max-w-lg mx-auto w-full min-w-0">
+        <div className="relative flex items-center w-full min-w-0">
           <input
             type="text"
             value={query}
@@ -83,7 +83,7 @@ export default function TrackPage() {
               "Enter Pickup ID (e.g. rem-001, rem-002)...",
               "पिकअप ID डालें (जैसे rem-001, rem-002)..."
             )}
-            className="w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3.5 pl-11 pr-28 text-sm font-medium text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-[#0072d2] focus:outline-none focus:ring-4 focus:ring-sky-100"
+            className="w-full min-w-0 rounded-2xl border-2 border-slate-200 bg-white px-4 py-3.5 pl-11 pr-24 sm:pr-28 text-sm font-medium text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-[#0072d2] focus:outline-none focus:ring-4 focus:ring-sky-100"
           />
           <Search
             size={18}
@@ -252,7 +252,7 @@ export default function TrackPage() {
             {userListings.map((l) => (
               <div
                 key={l.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs hover:border-sky-300 transition-all"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs hover:border-sky-300 transition-all w-full max-w-full min-w-0 overflow-hidden"
               >
                 <div>
                   <div className="flex items-center gap-2">
