@@ -20,6 +20,7 @@ interface LiveTrackingCardProps {
   pickupAddress?: string;
   payoutAmount: number;
   onCompletePickup?: () => void;
+  onViewReceipt?: () => void;
 }
 
 export default function LiveTrackingCard({
@@ -30,6 +31,7 @@ export default function LiveTrackingCard({
   pickupAddress,
   payoutAmount,
   onCompletePickup,
+  onViewReceipt,
 }: LiveTrackingCardProps) {
   const etaMinutes = 14;
   const [simulatedComplete, setSimulatedComplete] = useState(
@@ -224,9 +226,20 @@ export default function LiveTrackingCard({
               </p>
             </div>
           </div>
-          <span className="rounded-xl bg-emerald-700 px-3.5 py-1.5 text-xs font-bold text-white shadow-xs">
-            Completed ✓
-          </span>
+          {onViewReceipt ? (
+            <button
+              type="button"
+              onClick={onViewReceipt}
+              className="rounded-xl bg-emerald-700 hover:bg-emerald-800 px-3.5 py-1.5 text-xs font-bold text-white shadow-xs inline-flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shrink-0"
+            >
+              <span>View UPI Receipt (UTR)</span>
+              <ArrowRight size={13} />
+            </button>
+          ) : (
+            <span className="rounded-xl bg-emerald-700 px-3.5 py-1.5 text-xs font-bold text-white shadow-xs shrink-0">
+              Completed ✓
+            </span>
+          )}
         </div>
       ) : (
         <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-sky-100">

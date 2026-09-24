@@ -342,6 +342,7 @@ export default function ListingDetailClient({
                   });
                   setShowReceipt(true);
                 }}
+                onViewReceipt={() => setShowReceipt(true)}
               />
 
               {/* Handover OTP & Assigned Rider Details */}
