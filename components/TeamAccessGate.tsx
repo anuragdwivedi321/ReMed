@@ -63,14 +63,7 @@ export default function TeamAccessGate({ children }: TeamAccessGateProps) {
     }
   };
 
-  // Prevent flash during initial hydration
-  if (!isMounted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#0072d2] border-t-transparent" />
-      </div>
-    );
-  }
+
 
   // 1. If 2-Month Pilot is Expired
   if (isExpired) {
