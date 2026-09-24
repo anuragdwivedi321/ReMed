@@ -1,12 +1,15 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
-import { ClipboardList, PlusCircle, ArrowRight } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { ClipboardList, PlusCircle, ArrowRight, Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useStore } from "@/lib/store";
 import { LISTING_STATUS_LABEL } from "@/lib/types";
 import { isExpired, isExpiringWithinOneMonth } from "@/lib/priceEstimator";
 import StatusTracker from "@/components/StatusTracker";
+import ListingDetailClient from "@/components/ListingDetailClient";
 
 const STATUS_BADGE: Record<string, string> = {
   pending_review: "bg-amber-50 text-amber-800 border border-amber-200",
@@ -17,7 +20,20 @@ const STATUS_BADGE: Record<string, string> = {
   rejected: "bg-red-50 text-red-700 border border-red-200",
 };
 
-export default function DashboardPage() {
+function DashboardContent() {
+  const searchParams = useSearchParams();
+  const selectedId = searchParams?.get("id");
+
+  // If a specific listing is requested (e.g. from Sell Medicine flow or clicking a card),
+  // render its detail & doorstep scheduling interface directly without any 404!
+  if (selectedId) {
+    return <ListingDetailClient id={selectedId} />;
+  }
+
+  return <DashboardListingList />;
+}
+
+function DashboardListingList() {
   const { user } = useAuth();
   const { listings, loading, listingsForUser } = useStore();
   const userId = user?.id ?? "demo-user";
@@ -80,7 +96,7 @@ export default function DashboardPage() {
           {mine.map((listing) => (
             <Link
               key={listing.id}
-              href={`/dashboard/${listing.id}`}
+              href={`/dashboard?id=${listing.id}`}
               className="group block rounded-3xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-sm transition-all duration-200 hover:border-sky-300 hover:shadow-md hover:shadow-blue-500/5 w-full max-w-full min-w-0 overflow-hidden"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
@@ -122,5 +138,19 @@ export default function DashboardPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center p-16 text-slate-400">
+          <Loader2 size={32} className="animate-spin text-[#0072d2]" />
+        </div>
+      }
+    >
+      <DashboardContent />
+    </Suspense>
   );
 }

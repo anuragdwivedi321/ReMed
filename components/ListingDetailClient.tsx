@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState, useSyncExternalStore } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -49,10 +50,15 @@ const SLOTS = [
 
 export default function ListingDetailClient({
   params,
+  id: propId,
 }: {
-  params: Promise<{ id: string }>;
+  params?: Promise<{ id: string }>;
+  id?: string;
 }) {
-  const { id } = use(params);
+  const searchParams = useSearchParams();
+  const searchId = searchParams?.get("id");
+  const unwrappedParams = params ? use(params) : null;
+  const id = propId || searchId || unwrappedParams?.id || "";
   const { getListing, updateListing } = useStore();
   const listing = getListing(id);
 

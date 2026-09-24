@@ -376,7 +376,7 @@ export default function MedicineForm() {
 
         <div className="mt-6 flex flex-col gap-3">
           <button
-            onClick={() => router.push(`/dashboard/${submitted}`)}
+            onClick={() => router.push(`/dashboard?id=${submitted}`)}
             className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#ff6b2b] to-[#f97316] px-6 py-4 text-sm sm:text-base font-bold text-white shadow-lg shadow-orange-500/25 hover:brightness-105 active:scale-95 transition-all cursor-pointer"
           >
             <span>Proceed to Doorstep Pickup &amp; UPI</span>
