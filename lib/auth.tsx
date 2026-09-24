@@ -8,13 +8,18 @@ import {
   auth as fbAuth,
 } from "./firebase";
 import { onAuthStateChanged, signOut as fbSignOut } from "firebase/auth";
+import {
+  sendOtpToTelegram,
+  verifyEnteredOtp,
+  SendTelegramOtpResult,
+} from "./telegramAuth";
 
 const STORAGE_KEY = "remed.session.v1";
 
 interface AuthContextValue {
   user: AppUser | null;
   loading: boolean;
-  requestOtp: (identifier: string) => Promise<void>;
+  requestOtp: (identifier: string, customChatId?: string) => Promise<SendTelegramOtpResult>;
   verifyOtp: (identifier: string, otp: string) => Promise<AppUser>;
   signInWithGoogleAuth: () => Promise<AppUser>;
   signOut: () => void;
@@ -60,16 +65,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const requestOtp = async (identifier: string) => {
-    // Simulated or Firebase Phone OTP request
-    await new Promise((r) => setTimeout(r, 600));
+  const requestOtp = async (identifier: string, customChatId?: string): Promise<SendTelegramOtpResult> => {
+    return await sendOtpToTelegram(identifier, customChatId);
   };
 
-  const verifyOtp = async (identifier: string, otp: string) => {
-    await new Promise((r) => setTimeout(r, 500));
-    if (!/^\d{4,6}$/.test(otp.trim())) {
-      throw new Error("Enter a valid OTP code (e.g. 1234 or 111111).");
-    }
+  const verifyOtp = async (identifier: string, otp: string): Promise<AppUser> => {
+    await new Promise((r) => setTimeout(r, 400));
+    
+    // Strict Telegram OTP verification: only the exact OTP sent to Telegram is accepted!
+    verifyEnteredOtp(identifier, otp);
 
     const normalizedIdentifier = identifier.trim().toLowerCase();
     const isAdmin = normalizedIdentifier.includes("admin");
