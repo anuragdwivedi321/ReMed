@@ -231,6 +231,24 @@ export default function ListingDetailClient({
               <span>{listing.quantityValue} {listing.quantityUnit}</span>
               <span>&bull;</span>
               <span>Condition: <strong className="text-slate-700 capitalize">{listing.condition}</strong></span>
+              {listing.mfd && (
+                <>
+                  <span>&bull;</span>
+                  <span>MFD: <strong className="text-slate-700">{listing.mfd}</strong></span>
+                </>
+              )}
+              {listing.batchNumber && (
+                <>
+                  <span>&bull;</span>
+                  <span>Batch: <strong className="text-slate-700">{listing.batchNumber}</strong></span>
+                </>
+              )}
+              {listing.mrp && (
+                <>
+                  <span>&bull;</span>
+                  <span>MRP: <strong className="text-slate-700">₹{listing.mrp}</strong></span>
+                </>
+              )}
               <span>&bull;</span>
               <span>
                 Expiry:{" "}

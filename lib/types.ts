@@ -75,6 +75,7 @@ export interface Listing {
   createdAt: string;
   adminNote?: string;
   batchNumber?: string;
+  mfd?: string;
   mrp?: number;
   genericComposition?: string;
   payoutStatus?: "pending" | "processing" | "credited" | "paid" | "failed";
