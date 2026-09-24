@@ -3,20 +3,15 @@ import WatchVideoButton from "@/components/WatchVideoButton";
 import QuickSellHeroSearch from "@/components/QuickSellHeroSearch";
 import MedicineCalculator from "@/components/MedicineCalculator";
 import Testimonials from "@/components/Testimonials";
-import ImpactCertificateButton from "@/components/ImpactCertificateButton";
 import HeroAnimatedCard from "@/components/HeroAnimatedCard";
 import {
   ArrowRight,
   Pill,
-  Users,
   Scan,
   TrendingUp,
   Truck,
   ShieldCheck,
-  Heart,
   Camera,
-  CheckCircle2,
-  Sparkles,
   Wallet,
 } from "lucide-react";
 
@@ -230,77 +225,7 @@ export default function LandingPage() {
       </section>
 
       {/* ========================================================= */}
-      {/* 4. VERIFIED STATS COUNTER STRIP                           */}
-      {/* ========================================================= */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full max-w-full min-w-0 overflow-hidden">
-        <div className="rounded-3xl border border-slate-200/80 bg-white p-5 sm:p-8 shadow-xs">
-          <div className="grid gap-4 sm:gap-6 grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-slate-200">
-            {/* Stat 1 */}
-            <div className="flex items-center gap-3 sm:gap-4 lg:px-4">
-              <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-[#0072d2]">
-                <Users size={20} className="sm:h-6 sm:w-6" />
-              </div>
-              <div>
-                <p className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">
-                  10,000+
-                </p>
-                <p className="text-[10px] sm:text-xs font-medium text-slate-500">Happy Users</p>
-              </div>
-            </div>
-
-            {/* Stat 2 */}
-            <div className="flex items-center gap-3 sm:gap-4 lg:px-4">
-              <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl bg-orange-100 text-[#ff6b2b]">
-                <Pill size={20} className="sm:h-6 sm:w-6" />
-              </div>
-              <div>
-                <p className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">
-                  ₹25 Lakh+
-                </p>
-                <p className="text-[10px] sm:text-xs font-medium text-slate-500">Paid Out</p>
-              </div>
-            </div>
-
-            {/* Stat 3 */}
-            <div className="flex items-center gap-3 sm:gap-4 lg:px-4">
-              <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
-                <CheckCircle2 size={20} className="sm:h-6 sm:w-6" />
-              </div>
-              <div>
-                <p className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">
-                  100%
-                </p>
-                <p className="text-[10px] sm:text-xs font-medium text-slate-500">
-                  Safe &amp; Verified
-                </p>
-              </div>
-            </div>
-
-            {/* Stat 4 */}
-            <div className="flex flex-col justify-center gap-2 lg:px-4 min-w-0">
-              <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
-                <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl bg-teal-100 text-teal-700">
-                  <Sparkles size={20} className="sm:h-6 sm:w-6" />
-                </div>
-                <div className="min-w-0">
-                  <p className="font-display text-sm sm:text-base font-extrabold text-slate-900 truncate">
-                    Eco Impact
-                  </p>
-                  <p className="text-[10px] sm:text-xs font-medium text-slate-500 truncate">
-                    Zero Landfill
-                  </p>
-                </div>
-              </div>
-              <div className="pt-0.5">
-                <ImpactCertificateButton label="View Impact" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 5. CUSTOMER TESTIMONIALS & TRUST                          */}
+      {/* 4. CUSTOMER TESTIMONIALS & TRUST                          */}
       {/* ========================================================= */}
       <Testimonials />
     </div>

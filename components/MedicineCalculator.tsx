@@ -157,9 +157,6 @@ export default function MedicineCalculator() {
           <h3 className="font-display text-xl min-[380px]:text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight break-words">
             Check Your Medicine’s Cashback Value
           </h3>
-          <p className="mt-1 text-xs sm:text-sm text-slate-500">
-            See how much you can earn before scheduling a free doorstep pickup.
-          </p>
         </div>
 
         {/* Cash / Donate Mode Toggle */}
