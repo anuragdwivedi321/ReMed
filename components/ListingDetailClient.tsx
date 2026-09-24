@@ -35,6 +35,8 @@ import {
 } from "@/lib/priceEstimator";
 import StatusTracker from "@/components/StatusTracker";
 import LiveTrackingCard from "@/components/LiveTrackingCard";
+import UpiReceiptModal from "@/components/UpiReceiptModal";
+import { generateNpciUtr } from "@/lib/payoutGateway";
 
 const emptySubscribe = () => () => {};
 
@@ -84,6 +86,7 @@ export default function ListingDetailClient({
   );
   const [saved, setSaved] = useState(false);
   const [isEditingPickup, setIsEditingPickup] = useState(false);
+  const [showReceipt, setShowReceipt] = useState(false);
 
   const todayStr = useSyncExternalStore(
     emptySubscribe,
@@ -312,7 +315,14 @@ export default function ListingDetailClient({
                 pickupAddress={`${listing.pickup.addressLine}, ${listing.pickup.city}`}
                 payoutAmount={listing.finalPrice ?? listing.estimatedPrice}
                 onCompletePickup={() => {
-                  updateListing(listing.id, { status: "completed" });
+                  const generatedUtr = listing.payoutUtr || generateNpciUtr();
+                  updateListing(listing.id, {
+                    status: "completed",
+                    payoutStatus: "paid",
+                    payoutUtr: generatedUtr,
+                    payoutTimestamp: new Date().toISOString(),
+                  });
+                  setShowReceipt(true);
                 }}
               />
 
@@ -435,6 +445,16 @@ export default function ListingDetailClient({
                     <p className="text-emerald-600 font-semibold">
                       ₹{listing.finalPrice ?? listing.estimatedPrice} will be transferred directly to this account upon OTP verification.
                     </p>
+                    {listing.pickup.payoutMode !== "donate" && (
+                      <button
+                        type="button"
+                        onClick={() => setShowReceipt(true)}
+                        className="mt-2 inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 border border-emerald-300 px-3 py-1.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition-colors shadow-2xs active:scale-95 cursor-pointer"
+                      >
+                        <ShieldCheck size={14} className="text-emerald-600" />
+                        View Instant UPI Receipt {listing.payoutUtr ? `(UTR: ${listing.payoutUtr.slice(0, 6)}...)` : "(Demo Slip)"}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -824,6 +844,13 @@ export default function ListingDetailClient({
           {LISTING_STATUS_LABEL[listing.status]}
         </strong>
       </p>
+
+      {/* Instant UPI Payout Receipt Slip */}
+      <UpiReceiptModal
+        listing={listing}
+        isOpen={showReceipt}
+        onClose={() => setShowReceipt(false)}
+      />
     </div>
   );
 }

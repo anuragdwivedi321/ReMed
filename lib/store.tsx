@@ -1,21 +1,19 @@
 "use client";
 
 /**
- * ------------------------------------------------------------------
- * Mock data layer.
- * ------------------------------------------------------------------
- * Per the build brief: wire the Sell Medicine flow end-to-end first
- * with local/mock data, then swap this file for real API routes
- * backed by PostgreSQL. Every function here mirrors what a future
- * `/app/api/listings/*` route would do, so the swap is mechanical:
- *   - listListings(userId?)   -> GET /api/listings
- *   - createListing(input)    -> POST /api/listings
- *   - updateListing(id, patch)-> PATCH /api/listings/:id
- * ------------------------------------------------------------------
+ * ReMeD Unified Data Layer.
+ * - Real-time Cloud Firestore synchronization when Firebase is configured
+ * - Offline-first LocalStorage caching for zero latency and offline support
  */
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Listing, ListingStatus } from "./types";
+import {
+  isFirebaseConfigured,
+  saveListingToFirestore,
+  updateListingInFirestore,
+  subscribeToCloudListings,
+} from "./firebase";
 
 const STORAGE_KEY = "remed.listings.v1";
 
@@ -57,6 +55,8 @@ function seedListings(): Listing[] {
         pincode: "211001",
         date: new Date(now + 1000 * 60 * 60 * 24 * 3).toISOString().slice(0, 10),
         slot: "10:00 AM - 12:00 PM",
+        upiId: "anurag@okhdfcbank",
+        payoutMode: "upi",
       },
       createdAt: new Date(now - 1000 * 60 * 60 * 24 * 4).toISOString(),
     },
@@ -87,12 +87,17 @@ function seedListings(): Listing[] {
       estimatedPrice: 40,
       finalPrice: 40,
       status: "paid",
+      payoutStatus: "credited",
+      payoutUtr: "426819830219",
+      payoutTimestamp: new Date(now - 1000 * 60 * 60 * 24 * 10).toISOString(),
       pickup: {
         addressLine: "12 Lotus Enclave, Civil Lines",
         city: "Prayagraj",
         pincode: "211001",
         date: new Date(now - 1000 * 60 * 60 * 24 * 10).toISOString().slice(0, 10),
         slot: "2:00 PM - 4:00 PM",
+        upiId: "anurag@paytm",
+        payoutMode: "upi",
       },
       createdAt: new Date(now - 1000 * 60 * 60 * 24 * 14).toISOString(),
     },
@@ -104,6 +109,7 @@ function seedListings(): Listing[] {
 interface StoreContextValue {
   listings: Listing[];
   loading: boolean;
+  isCloudSynced: boolean;
   createListing: (listing: Listing) => void;
   updateListing: (id: string, patch: Partial<Listing>) => void;
   getListing: (id: string) => Listing | undefined;
@@ -115,13 +121,37 @@ const StoreContext = createContext<StoreContextValue | null>(null);
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isCloudSynced, setIsCloudSynced] = useState(isFirebaseConfigured);
 
   useEffect(() => {
-    // Hydrating from localStorage after mount (SSR has no `window`), so a
-    // one-time setState here is intentional rather than a derived-state bug.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setListings(loadFromStorage());
+    // 1. Initial load from local storage
+    const initial = loadFromStorage();
+    setListings(initial);
     setLoading(false);
+
+    // 2. If Firebase Firestore is configured, listen to live Cloud updates
+    if (isFirebaseConfigured) {
+      const unsub = subscribeToCloudListings(null, true, (cloudListings) => {
+        if (cloudListings && cloudListings.length > 0) {
+          setListings((prev) => {
+            // Merge cloud and local listings
+            const map = new Map<string, Listing>();
+            prev.forEach((item) => map.set(item.id, item));
+            cloudListings.forEach((item) => map.set(item.id, item));
+            const merged = Array.from(map.values()).sort(
+              (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+            persist(merged);
+            return merged;
+          });
+          setIsCloudSynced(true);
+        }
+      });
+
+      return () => {
+        if (unsub) unsub();
+      };
+    }
   }, []);
 
   const createListing = useCallback((listing: Listing) => {
@@ -130,6 +160,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       persist(next);
       return next;
     });
+
+    // Cloud firestore sync
+    if (isFirebaseConfigured) {
+      saveListingToFirestore(listing);
+    }
   }, []);
 
   const updateListing = useCallback((id: string, patch: Partial<Listing>) => {
@@ -138,6 +173,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       persist(next);
       return next;
     });
+
+    // Cloud firestore update
+    if (isFirebaseConfigured) {
+      updateListingInFirestore(id, patch);
+    }
   }, []);
 
   const getListing = useCallback(
@@ -151,8 +191,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   );
 
   const value = useMemo(
-    () => ({ listings, loading, createListing, updateListing, getListing, listingsForUser }),
-    [listings, loading, createListing, updateListing, getListing, listingsForUser]
+    () => ({
+      listings,
+      loading,
+      isCloudSynced,
+      createListing,
+      updateListing,
+      getListing,
+      listingsForUser,
+    }),
+    [listings, loading, isCloudSynced, createListing, updateListing, getListing, listingsForUser]
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

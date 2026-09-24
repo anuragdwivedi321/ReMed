@@ -12,8 +12,11 @@ import {
   ShieldCheck,
   ArrowRight,
   ClipboardList,
+  Sparkles,
+  Key,
 } from "lucide-react";
 import CameraCapture from "@/components/CameraCapture";
+import GeminiKeyModal from "@/components/GeminiKeyModal";
 import { useStore } from "@/lib/store";
 import { useAuth } from "@/lib/auth";
 import { Condition, Listing, MedicineCategory, PhotoAsset, QuantityUnit } from "@/lib/types";
@@ -27,7 +30,11 @@ import {
   isValidExpiryDate,
 } from "@/lib/priceEstimator";
 import { findMedicines, MEDICINE_CATALOG } from "@/lib/medicineCatalog";
-import { extractExpiryDate } from "@/lib/expiryOcr";
+import {
+  scanMedicineWithGemini,
+  getGeminiApiKey,
+  GeminiMedicineScanResult,
+} from "@/lib/geminiVision";
 
 const CATEGORIES: { value: MedicineCategory; label: string }[] = [
   { value: "tablet", label: "Tablet" },
@@ -44,10 +51,10 @@ const UNITS: { value: QuantityUnit; label: string }[] = [
   { value: "strip", label: "Strip(s)" },
   { value: "bottle", label: "Bottle(s)" },
   { value: "ml", label: "ml" },
-  { value: "units", label: "Unit(s)" },
+  { value: "units", label: "Units" },
 ];
 
-const MONTH_OPTIONS = [
+const MONTH_NAMES = [
   { value: "01", label: "01 - January" },
   { value: "02", label: "02 - February" },
   { value: "03", label: "03 - March" },
@@ -87,6 +94,8 @@ export default function MedicineForm() {
   const pickerRef = useRef<HTMLDivElement>(null);
 
   const [condition, setCondition] = useState<Condition>("sealed");
+  const [batchNumber, setBatchNumber] = useState("");
+  const [mrp, setMrp] = useState<number | undefined>();
   const [packagePhotos, setPackagePhotos] = useState<PhotoAsset[]>([]);
   const [expiryPhotos, setExpiryPhotos] = useState<PhotoAsset[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -95,7 +104,14 @@ export default function MedicineForm() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [scanningExpiry, setScanningExpiry] = useState(false);
   const [ocrMessage, setOcrMessage] = useState<string | null>(null);
+  const [aiScanData, setAiScanData] = useState<GeminiMedicineScanResult | null>(null);
+  const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
+  const [hasGeminiKey, setHasGeminiKey] = useState(false);
   const scannedPhotoIds = useRef(new Set<string>());
+
+  useEffect(() => {
+    setHasGeminiKey(Boolean(getGeminiApiKey()));
+  }, []);
 
   const currentYear = useMemo(() => new Date().getFullYear(), []);
   const maxYear = currentYear + 6;
@@ -129,10 +145,10 @@ export default function MedicineForm() {
       const num = parseInt(val, 10);
       if (num > 31) val = "31";
     }
+    setDayVal(val);
     updateDateParts(val, monthVal, yearVal);
     if (val.length === 2 && monthInputRef.current) {
       monthInputRef.current.focus();
-      monthInputRef.current.select();
     }
   };
 
@@ -142,23 +158,17 @@ export default function MedicineForm() {
       const num = parseInt(val, 10);
       if (num > 12) val = "12";
     }
+    setMonthVal(val);
     updateDateParts(dayVal, val, yearVal);
     if (val.length === 2 && yearInputRef.current) {
       yearInputRef.current.focus();
-      yearInputRef.current.select();
     }
   };
 
   const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Strictly limited to digits only, maximum 4 digits (never allows 6 digits or overflow)
     const val = e.target.value.replace(/\D/g, "").slice(0, 4);
+    setYearVal(val);
     updateDateParts(dayVal, monthVal, val);
-  };
-
-  const handleDayKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" || e.key === "ArrowRight") {
-      if (monthInputRef.current) monthInputRef.current.focus();
-    }
   };
 
   const handleMonthKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -176,28 +186,6 @@ export default function MedicineForm() {
       monthInputRef.current.focus();
     } else if (e.key === "ArrowLeft" && monthInputRef.current) {
       monthInputRef.current.focus();
-    }
-  };
-
-  const handlePaste = (e: React.ClipboardEvent) => {
-    e.preventDefault();
-    const pasted = e.clipboardData.getData("text").trim();
-    const match = pasted.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/);
-    if (match) {
-      updateDateParts(match[1].padStart(2, "0"), match[2].padStart(2, "0"), match[3]);
-      return;
-    }
-    const isoMatch = pasted.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
-    if (isoMatch) {
-      updateDateParts(isoMatch[3].padStart(2, "0"), isoMatch[2].padStart(2, "0"), isoMatch[1]);
-      return;
-    }
-    const myMatch = pasted.match(/^(\d{1,2})[-/.](\d{4})$/);
-    if (myMatch) {
-      const m = myMatch[1].padStart(2, "0");
-      const y = myMatch[2];
-      const maxDays = new Date(parseInt(y, 10), parseInt(m, 10), 0).getDate();
-      updateDateParts(String(maxDays).padStart(2, "0"), m, y);
     }
   };
 
@@ -225,43 +213,83 @@ export default function MedicineForm() {
     [medicineName]
   );
 
+  // Real Gemini AI Multimodal Vision Scan on photo upload
   useEffect(() => {
-    const photo = expiryPhotos.at(-1);
-    if (!photo || scannedPhotoIds.current.has(photo.id)) return;
-    scannedPhotoIds.current.add(photo.id);
+    const latestPhoto = [...packagePhotos, ...expiryPhotos].at(-1);
+    if (!latestPhoto || scannedPhotoIds.current.has(latestPhoto.id)) return;
+    scannedPhotoIds.current.add(latestPhoto.id);
 
     let cancelled = false;
-    async function scanExpiry() {
+    async function runAiScan() {
       setScanningExpiry(true);
-      setOcrMessage("Reading the expiry label from your photo…");
+      const keyExists = Boolean(getGeminiApiKey());
+      setOcrMessage(
+        keyExists
+          ? "✨ Gemini AI analyzing medicine strip (Name, Expiry, Batch, MRP)…"
+          : "🔍 Reading printed text and expiry date from photo…"
+      );
+
       try {
-        const { recognize } = await import("tesseract.js");
-        const result = await recognize(photo!.dataUrl, "eng");
+        const result = await scanMedicineWithGemini(latestPhoto!.dataUrl);
         if (cancelled) return;
-        const detected = extractExpiryDate(result.data.text);
-        if (detected) {
-          setExpiryDate(detected);
-          const parts = detected.split("-");
-          if (parts[0]) setYearVal(parts[0]);
-          if (parts[1]) setMonthVal(parts[1].padStart(2, "0"));
-          if (parts[2]) setDayVal(parts[2].padStart(2, "0"));
-          setOcrMessage(
-            `Expiry detected: ${new Date(`${detected}T00:00:00`).toLocaleDateString("en-IN")}. Please confirm it.`
-          );
+
+        if (result.success) {
+          setAiScanData(result);
+
+          // Auto-fill Medicine Name if empty or short
+          if (result.medicineName && (!medicineName || medicineName.length < 3)) {
+            setMedicineName(result.medicineName);
+          }
+
+          // Auto-fill Category
+          if (result.category) {
+            setCategory(result.category);
+          }
+
+          // Auto-fill Expiry Date
+          if (result.expiryDate) {
+            setExpiryDate(result.expiryDate);
+            const parts = result.expiryDate.split("-");
+            if (parts[0]) setYearVal(parts[0]);
+            if (parts[1]) setMonthVal(parts[1].padStart(2, "0"));
+            if (parts[2]) setDayVal(parts[2].padStart(2, "0"));
+          }
+
+          // Auto-fill Condition
+          if (result.condition) {
+            setCondition(result.condition);
+          }
+
+          // Auto-fill Batch & MRP
+          if (result.batchNumber) setBatchNumber(result.batchNumber);
+          if (result.mrp) setMrp(result.mrp);
+
+          const sourceLabel = result.source === "gemini" ? "Gemini AI" : "OCR";
+          const details = [
+            result.medicineName,
+            result.expiryDate ? `Exp: ${result.expiryDate}` : null,
+            result.batchNumber ? `Batch: ${result.batchNumber}` : null,
+            result.mrp ? `MRP: ₹${result.mrp}` : null,
+          ]
+            .filter(Boolean)
+            .join(" • ");
+
+          setOcrMessage(`✓ ${sourceLabel} verified: ${details}. Please review below.`);
         } else {
-          setOcrMessage("Expiry was not clear. Try a closer, well-lit photo or enter it manually.");
+          setOcrMessage("Could not read text clearly. You can enter expiry & name manually.");
         }
-      } catch {
-        if (!cancelled) setOcrMessage("Could not scan this photo. Please enter the expiry manually.");
+      } catch (err) {
+        if (!cancelled) setOcrMessage("Could not scan photo. Please enter expiry manually.");
       } finally {
         if (!cancelled) setScanningExpiry(false);
       }
     }
-    scanExpiry();
+
+    runAiScan();
     return () => {
       cancelled = true;
     };
-  }, [expiryPhotos]);
+  }, [packagePhotos, expiryPhotos, medicineName]);
 
   const canSubmit =
     medicineName.trim().length > 1 &&
@@ -295,7 +323,7 @@ export default function MedicineForm() {
       return setFormError("Add at least one photo of the strip or box.");
 
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 600)); // simulate network round-trip
+    await new Promise((r) => setTimeout(r, 600));
 
     const listing: Listing = {
       id: crypto.randomUUID(),
@@ -310,6 +338,11 @@ export default function MedicineForm() {
       estimatedPrice: estimate?.price ?? 0,
       status: "pending_review",
       createdAt: new Date().toISOString(),
+      batchNumber: batchNumber.trim() || undefined,
+      mrp: mrp || undefined,
+      genericComposition: aiScanData?.genericComposition || undefined,
+      aiConfidence: aiScanData?.confidence || undefined,
+      aiSource: aiScanData?.source || (hasGeminiKey ? "gemini" : "manual"),
     };
 
     createListing(listing);
@@ -468,24 +501,22 @@ export default function MedicineForm() {
                   type="button"
                   onClick={() => setQuantityValue((q) => Math.max(1, q - 1))}
                   disabled={quantityValue <= 1}
-                  aria-label="Decrease quantity"
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-slate-100 text-slate-700 hover:bg-slate-200 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-lg transition-all"
+                  className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 border border-slate-200 text-base font-bold text-slate-700 hover:bg-slate-200 active:scale-95 disabled:opacity-40"
                 >
-                  −
+                  -
                 </button>
                 <input
                   id="quantityValue"
                   type="number"
                   min={1}
                   value={quantityValue}
-                  onChange={(e) => setQuantityValue(Math.max(1, Number(e.target.value)))}
-                  className="h-11 w-full text-center font-mono font-extrabold text-base text-slate-900 rounded-xl border border-slate-300 bg-white focus:border-[#0072d2] focus:outline-none transition-all"
+                  onChange={(e) => setQuantityValue(Math.max(1, Number(e.target.value) || 1))}
+                  className="h-11 w-20 rounded-xl border border-slate-300 text-center font-bold text-slate-900 focus:border-[#0072d2] focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => setQuantityValue((q) => q + 1)}
-                  aria-label="Increase quantity"
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-sky-300 bg-sky-50 text-[#0072d2] hover:bg-sky-100 active:scale-95 font-bold text-lg transition-all"
+                  className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 border border-slate-200 text-base font-bold text-slate-700 hover:bg-slate-200 active:scale-95"
                 >
                   +
                 </button>
@@ -494,16 +525,16 @@ export default function MedicineForm() {
 
             <div>
               <label className="block text-sm font-bold text-slate-900 mb-1.5" htmlFor="quantityUnit">
-                Unit
+                Unit Type
               </label>
               <select
                 id="quantityUnit"
                 value={quantityUnit}
                 onChange={(e) => setQuantityUnit(e.target.value as QuantityUnit)}
-                className="h-11 w-full rounded-xl border border-slate-300 bg-slate-50/50 px-3.5 text-base sm:text-sm text-slate-900 focus:border-[#0072d2] focus:bg-white focus:outline-none transition-all"
+                className="h-11 w-full rounded-xl border border-slate-300 bg-slate-50/50 px-3 text-sm font-semibold text-slate-800 focus:border-[#0072d2] focus:bg-white focus:outline-none"
               >
                 {UNITS.map((u) => (
-                  <option value={u.value} key={u.value}>
+                  <option key={u.value} value={u.value}>
                     {u.label}
                   </option>
                 ))}
@@ -511,101 +542,95 @@ export default function MedicineForm() {
             </div>
           </div>
 
-          <div className="mt-5 relative" ref={pickerRef}>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-sm font-bold text-slate-900" htmlFor="dayInput">
-                Expiry Date <span className="text-xs font-normal text-slate-500">(DD / MM / YYYY)</span>
+          {/* Batch & MRP fields (auto-filled by Gemini AI or entered manually) */}
+          <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-900" htmlFor="batchNumber">
+                Batch No. <span className="text-slate-400 font-normal">(AI auto-detected)</span>
               </label>
-              <span className="text-[11px] font-semibold text-[#0072d2] bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
-                Valid: {currentYear} – {maxYear}
-              </span>
+              <input
+                id="batchNumber"
+                value={batchNumber}
+                onChange={(e) => setBatchNumber(e.target.value)}
+                placeholder="e.g. BT8921"
+                className="mt-1.5 w-full rounded-xl border border-slate-300 bg-slate-50/50 px-3.5 py-2.5 text-xs sm:text-sm font-mono focus:border-[#0072d2] focus:bg-white focus:outline-none"
+              />
             </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-900" htmlFor="mrp">
+                Printed MRP (₹) <span className="text-slate-400 font-normal">(AI auto-detected)</span>
+              </label>
+              <input
+                id="mrp"
+                type="number"
+                value={mrp ?? ""}
+                onChange={(e) => setMrp(e.target.value ? Number(e.target.value) : undefined)}
+                placeholder="e.g. 185"
+                className="mt-1.5 w-full rounded-xl border border-slate-300 bg-slate-50/50 px-3.5 py-2.5 text-xs sm:text-sm font-mono focus:border-[#0072d2] focus:bg-white focus:outline-none"
+              />
+            </div>
+          </div>
 
-            {/* Professional Unified Date Box with Day / Month / Year */}
-            <div
-              onPaste={handlePaste}
-              className="flex items-center justify-between rounded-xl border border-slate-300 bg-slate-50/50 px-3.5 py-2.5 transition-all focus-within:border-[#0072d2] focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-100"
-            >
-              <div className="flex items-center gap-1 text-sm font-bold text-slate-900">
-                <Calendar size={18} className="text-[#0072d2] shrink-0 mr-1.5" />
-
-                {/* Day Input */}
-                <input
-                  ref={dayInputRef}
-                  id="dayInput"
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={2}
-                  placeholder="DD"
-                  value={dayVal}
-                  onChange={handleDayChange}
-                  onKeyDown={handleDayKeyDown}
-                  className="w-8 text-center font-mono text-sm font-bold text-slate-900 bg-transparent placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:bg-blue-50/80 rounded"
-                />
-
-                <span className="text-slate-400 font-bold select-none">/</span>
-
-                {/* Month Input */}
-                <input
-                  ref={monthInputRef}
-                  id="monthInput"
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={2}
-                  placeholder="MM"
-                  value={monthVal}
-                  onChange={handleMonthChange}
-                  onKeyDown={handleMonthKeyDown}
-                  className="w-8 text-center font-mono text-sm font-bold text-slate-900 bg-transparent placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:bg-blue-50/80 rounded"
-                />
-
-                <span className="text-slate-400 font-bold select-none">/</span>
-
-                {/* Year Input - STRICTLY 4 DIGITS */}
-                <input
-                  ref={yearInputRef}
-                  id="yearInput"
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={4}
-                  placeholder="YYYY"
-                  value={yearVal}
-                  onChange={handleYearChange}
-                  onKeyDown={handleYearKeyDown}
-                  className="w-14 text-center font-mono text-sm font-bold text-slate-900 bg-transparent placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:bg-blue-50/80 rounded tracking-wider"
-                />
-              </div>
-
-              {/* Calendar Toggle Button */}
+          {/* Expiry Date Section */}
+          <div className="mt-6 border-t border-slate-100 pt-5">
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-bold text-slate-900">
+                Expiry Date (DD / MM / YYYY)
+              </label>
               <button
                 type="button"
-                onClick={() => setIsPickerOpen(!isPickerOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold text-[#0072d2] bg-blue-50 hover:bg-blue-100 rounded-lg transition-all active:scale-95"
+                onClick={() => setIsPickerOpen((o) => !o)}
+                className="inline-flex items-center gap-1 text-xs font-bold text-[#0072d2] hover:underline"
               >
-                <span>{isPickerOpen ? "Close" : "Pick Date"}</span>
-                <Calendar size={14} />
+                <Calendar size={13} />
+                <span>{isPickerOpen ? "Hide Calendar" : "Pick from Calendar"}</span>
               </button>
             </div>
 
+            {/* Segmented Date Input */}
+            <div className="flex items-center gap-2 max-w-sm">
+              <input
+                ref={dayInputRef}
+                type="text"
+                inputMode="numeric"
+                value={dayVal}
+                onChange={handleDayChange}
+                placeholder="DD"
+                className="w-16 h-12 rounded-xl border border-slate-300 bg-slate-50/50 text-center font-mono-brand text-base font-bold text-slate-900 focus:border-[#0072d2] focus:bg-white focus:outline-none"
+              />
+              <span className="text-slate-400 font-bold">/</span>
+              <input
+                ref={monthInputRef}
+                type="text"
+                inputMode="numeric"
+                value={monthVal}
+                onChange={handleMonthChange}
+                onKeyDown={handleMonthKeyDown}
+                placeholder="MM"
+                className="w-16 h-12 rounded-xl border border-slate-300 bg-slate-50/50 text-center font-mono-brand text-base font-bold text-slate-900 focus:border-[#0072d2] focus:bg-white focus:outline-none"
+              />
+              <span className="text-slate-400 font-bold">/</span>
+              <input
+                ref={yearInputRef}
+                type="text"
+                inputMode="numeric"
+                value={yearVal}
+                onChange={handleYearChange}
+                onKeyDown={handleYearKeyDown}
+                placeholder="YYYY"
+                className="w-24 h-12 rounded-xl border border-slate-300 bg-slate-50/50 text-center font-mono-brand text-base font-bold text-slate-900 focus:border-[#0072d2] focus:bg-white focus:outline-none"
+              />
+            </div>
 
-            {/* Interactive Popover Picker */}
+            {/* Quick Calendar Picker */}
             {isPickerOpen && (
-              <div className="mt-2 p-4 bg-white rounded-2xl border border-slate-200 shadow-xl shadow-blue-900/10 z-20 transition-all">
-                <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
-                  <span className="text-xs font-bold text-slate-800">Select Expiry Month &amp; Year</span>
-                  <button
-                    type="button"
-                    onClick={() => setIsPickerOpen(false)}
-                    className="text-xs font-bold text-slate-400 hover:text-slate-700"
-                  >
-                    ✕ Close
-                  </button>
-                </div>
-
-                {/* Months Grid */}
+              <div
+                ref={pickerRef}
+                className="mt-3 p-4 rounded-2xl border border-slate-200 bg-white shadow-xl space-y-3"
+              >
                 <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Month</p>
-                <div className="grid grid-cols-4 sm:grid-cols-6 gap-1.5 mb-3.5">
-                  {MONTH_OPTIONS.map((m) => {
+                <div className="grid grid-cols-4 sm:grid-cols-6 gap-1.5">
+                  {MONTH_NAMES.map((m) => {
                     const isSel = monthVal === m.value;
                     return (
                       <button
@@ -628,8 +653,7 @@ export default function MedicineForm() {
                   })}
                 </div>
 
-                {/* Years Grid */}
-                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Year (Valid 5 Yrs)</p>
+                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Year</p>
                 <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
                   {YEAR_OPTIONS.map((y) => {
                     const isSel = yearVal === String(y);
@@ -660,12 +684,12 @@ export default function MedicineForm() {
               </div>
             )}
 
-            {/* Status Feedback alerts */}
+            {/* Status alerts */}
             {expired && (
               <p className="mt-2.5 flex items-center gap-1.5 text-xs font-semibold text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200">
                 <ShieldAlert size={16} className="shrink-0 text-red-600" />
                 <span>
-                  This medicine has already expired ({remainingDays < 0 ? `${Math.abs(remainingDays)} days ago` : "expired"}) — expired medicines cannot be accepted for resale.
+                  This medicine has already expired — expired medicines cannot be accepted for resale.
                 </span>
               </p>
             )}
@@ -673,25 +697,11 @@ export default function MedicineForm() {
               <p className="mt-2.5 flex items-center gap-1.5 text-xs font-semibold text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200">
                 <AlertTriangle size={16} className="shrink-0 text-red-600" />
                 <span>
-                  Expiring in {remainingDays} day{remainingDays === 1 ? "" : "s"} — medicines must have at least 1 month (30 days) shelf-life remaining to be eligible for sale.
+                  Expiring in {remainingDays} day{remainingDays === 1 ? "" : "s"} — at least 1 month shelf-life required to sell.
                 </span>
               </p>
             )}
-            {isInvalidFutureDate && (
-              <p className="mt-2.5 flex items-center gap-1.5 text-xs font-semibold text-amber-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200">
-                <AlertTriangle size={16} className="shrink-0" />
-                <span>Invalid expiry date — standard medicine shelf-life cannot exceed 5 years ({maxYear}).</span>
-              </p>
-            )}
-            {eligibleToSell && !isInvalidFutureDate && nearExpiry && (
-              <p className="mt-2.5 flex items-center gap-1.5 text-xs font-semibold text-amber-700 bg-amber-50 p-2.5 rounded-xl border border-amber-200">
-                <AlertTriangle size={16} className="shrink-0" />
-                <span>
-                  Expiring in {remainingDays} days (~{Math.max(1, Math.ceil(remainingDays / 30))} months) — eligible to sell, but price is discounted.
-                </span>
-              </p>
-            )}
-            {expiryDate && eligibleToSell && !isInvalidFutureDate && !nearExpiry && (
+            {eligibleToSell && !isInvalidFutureDate && !nearExpiry && (
               <p className="mt-2.5 flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
                 <CheckCircle2 size={16} className="shrink-0 text-emerald-600" />
                 <span>
@@ -708,7 +718,27 @@ export default function MedicineForm() {
           </div>
         </div>
 
-        {/* 2-Column Photo Upload Grid: Places Close-up of Expiry Date side-by-side in the empty space on desktop, 1-col on mobile */}
+        {/* Step 2: Clear Photos & AI Scanner Header */}
+        <div className="flex items-center justify-between px-1">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+            Step 2: Clear Photos
+          </span>
+
+          <button
+            type="button"
+            onClick={() => setIsKeyModalOpen(true)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 ${
+              hasGeminiKey
+                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                : "bg-sky-50 text-[#0072d2] border border-sky-200 hover:bg-sky-100"
+            }`}
+          >
+            <Sparkles size={13} className={hasGeminiKey ? "text-emerald-600" : "text-[#0072d2]"} />
+            <span>{hasGeminiKey ? "✨ Gemini AI Vision Active" : "⚙️ Configure Gemini Key"}</span>
+          </button>
+        </div>
+
+        {/* 2-Column Photo Upload Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-full min-w-0">
           <CameraCapture
             label="package"
@@ -721,17 +751,18 @@ export default function MedicineForm() {
           <CameraCapture
             label="expiry"
             title="Close-up of Expiry Date"
-            helperText="Our AI scanner will read the date automatically."
+            helperText="Our AI scanner will read the date & batch automatically."
             photos={expiryPhotos}
             onChange={setExpiryPhotos}
             maxPhotos={2}
           />
         </div>
 
+        {/* AI Scan Feedback Box */}
         {ocrMessage && (
           <div
             role="status"
-            className="flex items-start gap-2.5 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-slate-700 shadow-sm"
+            className="flex items-start gap-2.5 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-xs sm:text-sm text-slate-700 shadow-sm animate-in fade-in"
           >
             {scanningExpiry ? (
               <Loader2 size={18} className="mt-0.5 shrink-0 animate-spin text-[#0072d2]" />
@@ -740,7 +771,7 @@ export default function MedicineForm() {
             ) : (
               <ScanText size={18} className="mt-0.5 shrink-0 text-amber-600" />
             )}
-            <span className="font-medium">{ocrMessage}</span>
+            <span className="font-medium leading-relaxed">{ocrMessage}</span>
           </div>
         )}
       </div>
@@ -777,16 +808,6 @@ export default function MedicineForm() {
                 </p>
                 <p className="mt-1 text-xs text-amber-700">
                   Only {remainingDays} day{remainingDays === 1 ? "" : "s"} left. Minimum 30 days remaining shelf-life required to be eligible for sale.
-                </p>
-              </div>
-            ) : isInvalidFutureDate ? (
-              <div className="py-4 text-center">
-                <AlertTriangle size={28} className="mx-auto text-amber-500 mb-2" />
-                <p className="text-sm font-bold text-amber-800">
-                  Invalid Expiry Date
-                </p>
-                <p className="mt-1 text-xs text-slate-500">
-                  Shelf-life cannot exceed 5 years (up to {maxYear}).
                 </p>
               </div>
             ) : estimate && eligibleToSell ? (
@@ -832,7 +853,7 @@ export default function MedicineForm() {
         </div>
       </div>
 
-      {/* Sticky Mobile Floating Booking Bar (Fixed above MobileBottomNav on < lg screens) */}
+      {/* Sticky Mobile Floating Booking Bar */}
       <div className="fixed bottom-14 left-0 right-0 z-30 lg:hidden border-t border-slate-200/90 bg-white/95 backdrop-blur-md px-4 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
         <div className="mx-auto flex max-w-md items-center justify-between gap-3">
           <div className="flex flex-col min-w-0">
@@ -866,6 +887,13 @@ export default function MedicineForm() {
           </button>
         </div>
       </div>
+
+      {/* Gemini API Key Setup Modal */}
+      <GeminiKeyModal
+        isOpen={isKeyModalOpen}
+        onClose={() => setIsKeyModalOpen(false)}
+        onKeySaved={() => setHasGeminiKey(Boolean(getGeminiApiKey()))}
+      />
     </form>
   );
 }

@@ -74,6 +74,14 @@ export interface Listing {
   pickup?: PickupDetails;
   createdAt: string;
   adminNote?: string;
+  batchNumber?: string;
+  mrp?: number;
+  genericComposition?: string;
+  payoutStatus?: "pending" | "processing" | "credited" | "paid" | "failed";
+  payoutUtr?: string;
+  payoutTimestamp?: string;
+  aiConfidence?: number;
+  aiSource?: "gemini" | "tesseract" | "tesseract_fallback" | "manual";
 }
 
 export interface AppUser {
@@ -81,4 +89,8 @@ export interface AppUser {
   name: string;
   identifier: string; // phone or email
   isAdmin: boolean;
+  photoURL?: string;
+  email?: string;
+  phoneNumber?: string;
+  authProvider?: "google" | "phone" | "demo";
 }
