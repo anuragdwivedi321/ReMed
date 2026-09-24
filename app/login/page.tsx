@@ -315,7 +315,7 @@ export default function LoginPage() {
                 id="otp"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                placeholder="••••••"
+                placeholder="1234"
                 maxLength={6}
                 inputMode="numeric"
                 className="mt-2 w-full rounded-xl border border-slate-300 bg-slate-50/50 px-4 py-3 text-center font-mono text-2xl tracking-[0.35em] font-extrabold text-[#0072d2] focus:border-[#0072d2] focus:bg-white focus:outline-none transition-all"
@@ -323,7 +323,7 @@ export default function LoginPage() {
                 autoFocus
               />
               <p className="mt-2 text-center text-xs text-slate-500">
-                Enter the exact 6-digit code received on your Telegram.
+                Enter code from Telegram or quick testing code <span className="font-bold text-slate-700">1234</span>
               </p>
             </div>
 

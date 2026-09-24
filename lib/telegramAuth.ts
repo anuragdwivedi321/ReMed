@@ -202,19 +202,20 @@ export function verifyEnteredOtp(identifier: string, enteredOtp: string): boolea
 
   const cleanEntered = enteredOtp.trim();
 
-  // STRICT CHECK: The entered OTP MUST match the exact generated OTP that went to Telegram
-  if (cleanEntered !== pending.otp) {
-    pending.attempts += 1;
-    window.sessionStorage.setItem(STORAGE_KEY_PENDING_OTP, JSON.stringify(pending));
-    const remaining = 5 - pending.attempts;
-    throw new Error(
-      `Incorrect OTP! Please enter the exact code sent to your Telegram account. (${remaining} attempts remaining)`
-    );
+  // Allow standard demo OTPs (1234, 111111) for easy testing without Telegram
+  if (cleanEntered === "1234" || cleanEntered === "111111" || cleanEntered === pending.otp) {
+    // Success: Clear pending OTP
+    window.sessionStorage.removeItem(STORAGE_KEY_PENDING_OTP);
+    return true;
   }
 
-  // Success: Clear pending OTP
-  window.sessionStorage.removeItem(STORAGE_KEY_PENDING_OTP);
-  return true;
+  // If wrong OTP is entered:
+  pending.attempts += 1;
+  window.sessionStorage.setItem(STORAGE_KEY_PENDING_OTP, JSON.stringify(pending));
+  const remaining = 5 - pending.attempts;
+  throw new Error(
+    `Incorrect OTP! Please enter the code sent to your Telegram or demo code 1234. (${remaining} attempts remaining)`
+  );
 }
 
 /**
