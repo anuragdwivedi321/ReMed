@@ -4,6 +4,7 @@ import QuickSellHeroSearch from "@/components/QuickSellHeroSearch";
 import MedicineCalculator from "@/components/MedicineCalculator";
 import Testimonials from "@/components/Testimonials";
 import ImpactCertificateButton from "@/components/ImpactCertificateButton";
+import HeroAnimatedCard from "@/components/HeroAnimatedCard";
 import {
   ArrowRight,
   Pill,
@@ -130,62 +131,9 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Right Hero Graphic / Trust Visual (Desktop only to prevent mobile clutter) */}
-            <div className="relative lg:col-span-5 hidden lg:flex justify-center mt-2 lg:mt-0">
-              <div className="relative w-full max-w-sm sm:max-w-md">
-                {/* Floating Note 1 */}
-                <div className="absolute -top-4 right-1 sm:-top-6 sm:-right-2 z-20 flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur px-3 py-1 sm:px-3.5 sm:py-1.5 shadow-md border border-sky-100 text-[10px] sm:text-xs font-bold text-[#0072d2]">
-                  <span>Your Health Our Priority</span>
-                  <Heart size={12} className="text-[#0072d2] fill-[#0072d2]" />
-                </div>
-
-                {/* Main Visual Box */}
-                <div className="relative overflow-hidden rounded-3xl border border-sky-200/70 bg-gradient-to-br from-white via-sky-50/40 to-blue-50/60 p-5 sm:p-6 shadow-xl shadow-sky-500/10">
-                  <div className="relative flex flex-col items-center text-center">
-                    <div className="relative mb-4 sm:mb-5 flex h-40 w-40 sm:h-48 sm:w-48 items-center justify-center rounded-full bg-gradient-to-b from-sky-400/20 to-blue-600/30 p-2 border-4 border-white shadow-inner">
-                      <div className="relative flex h-full w-full items-center justify-center rounded-full bg-gradient-to-tr from-[#005bb5] to-[#0072d2] text-white overflow-hidden">
-                        <svg
-                          className="h-32 w-32 sm:h-36 sm:w-36 text-white translate-y-3"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                        >
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z" />
-                        </svg>
-                        <div className="absolute bottom-2 flex items-center justify-center rounded-full bg-white px-2.5 py-0.5 text-[9px] sm:text-[10px] font-bold text-[#0072d2] shadow-sm">
-                          Verified Pharmacist
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="rounded-2xl bg-white border border-slate-200/80 p-3.5 sm:p-4 shadow-sm max-w-xs text-left">
-                      <p className="text-xs italic text-slate-700 font-medium leading-snug">
-                        &ldquo;Use Medicines Wisely for a Healthier Tomorrow. ReMed verifies and redistributes so zero safe medicine is wasted.&rdquo;
-                      </p>
-                    </div>
-
-                    <div className="mt-4 sm:mt-5 flex w-full items-center justify-between rounded-xl bg-white p-3 border border-sky-100 shadow-2xs">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 shrink-0">
-                          <ShieldCheck size={18} />
-                        </div>
-                        <div className="text-left">
-                          <p className="text-xs font-bold text-slate-900">Better Health</p>
-                          <p className="text-[10px] text-slate-500">Brighter Tomorrows</p>
-                        </div>
-                      </div>
-                      <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] sm:text-[11px] font-bold text-emerald-700">
-                        100% Certified
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating Note 2 */}
-                <div className="absolute -bottom-3 left-1 sm:-bottom-3 sm:-left-3 z-20 flex items-center gap-1.5 rounded-2xl bg-[#0072d2] px-3 py-1.5 sm:px-3.5 sm:py-2 shadow-lg text-[10px] sm:text-xs font-bold text-white">
-                  <span>Small Steps, Big Health</span>
-                  <Heart size={12} className="text-white fill-white" />
-                </div>
-              </div>
+            {/* Right Hero Motion Simulation & Visual Experience */}
+            <div className="relative lg:col-span-5 flex justify-center mt-6 lg:mt-0 w-full max-w-full">
+              <HeroAnimatedCard />
             </div>
           </div>
         </div>
