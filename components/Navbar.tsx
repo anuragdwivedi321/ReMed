@@ -50,7 +50,6 @@ export function ReMedLogo() {
 
 const LINKS = [
   { href: "/", labelEn: "Home", labelHi: "होम" },
-  { href: "/sell", labelEn: "Sell Medicine", labelHi: "दवाई बेचें" },
   { href: "/#calculator", labelEn: "Price Calculator", labelHi: "कैलकुलेटर" },
   { href: "/#features", labelEn: "Features", labelHi: "फीचर्स" },
   { href: "/dashboard", labelEn: "My Listings", labelHi: "मेरी लिस्टिंग्स" },
