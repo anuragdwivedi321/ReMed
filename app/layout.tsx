@@ -6,6 +6,7 @@ import { LanguageProvider } from "@/lib/languageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import TeamAccessGate from "@/components/TeamAccessGate";
 
 export const metadata: Metadata = {
   title: "ReMeD — For a Safer, Healthier Tomorrow | Check. Track. Stay Safe.",
@@ -65,10 +66,12 @@ export default function RootLayout({
         <AuthProvider>
           <StoreProvider>
             <LanguageProvider>
-              <Navbar />
-              <main className="flex-1 pb-20 lg:pb-0 w-full max-w-full min-w-0 overflow-x-hidden">{children}</main>
-              <Footer />
-              <MobileBottomNav />
+              <TeamAccessGate>
+                <Navbar />
+                <main className="flex-1 pb-20 lg:pb-0 w-full max-w-full min-w-0 overflow-x-hidden">{children}</main>
+                <Footer />
+                <MobileBottomNav />
+              </TeamAccessGate>
             </LanguageProvider>
           </StoreProvider>
         </AuthProvider>
