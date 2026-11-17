@@ -1,0 +1,11 @@
+{
+  "name": "remed-admin-portal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ReMeD Dedicated Operations & Pharmacy Admin Portal",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  }
+}

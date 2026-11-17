@@ -152,7 +152,57 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         if (unsub) unsub();
       };
     }
+
+    // 3. Listen to local cross-portal BroadcastChannel (sync from Admin portal on port 3001)
+    if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+      try {
+        const channel = new BroadcastChannel("remed_listings_channel");
+        channel.onmessage = (event) => {
+          if (event.data?.type === "update" && event.data?.listing) {
+            const updated = event.data.listing as Listing;
+            setListings((prev) => {
+              const next = prev.map((l) => (l.id === updated.id ? { ...l, ...updated } : l));
+              persist(next);
+              return next;
+            });
+          } else if (event.data?.type === "create" && event.data?.listing) {
+            const created = event.data.listing as Listing;
+            setListings((prev) => {
+              if (prev.some((l) => l.id === created.id)) return prev;
+              const next = [created, ...prev];
+              persist(next);
+              return next;
+            });
+          }
+        };
+        return () => channel.close();
+      } catch {}
+    }
   }, []);
+
+  const notifyAdminBridge = (listing: Listing, action: "create" | "update") => {
+    if (typeof window === "undefined") return;
+    // Broadcast via BroadcastChannel
+    try {
+      if ("BroadcastChannel" in window) {
+        const channel = new BroadcastChannel("remed_listings_channel");
+        channel.postMessage({ type: action, listing });
+        channel.close();
+      }
+    } catch {}
+
+    // Send to Admin Portal HTTP Bridge on port 3001
+    try {
+      fetch("http://localhost:3001/api/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, listing }),
+        mode: "cors",
+      }).catch(() => {
+        // Safe to ignore if admin portal on 3001 is offline
+      });
+    } catch {}
+  };
 
   const createListing = useCallback((listing: Listing) => {
     setListings((prev) => {
@@ -165,11 +215,21 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     if (isFirebaseConfigured) {
       saveListingToFirestore(listing);
     }
+
+    // Notify local Admin portal
+    notifyAdminBridge(listing, "create");
   }, []);
 
   const updateListing = useCallback((id: string, patch: Partial<Listing>) => {
+    let updatedListing: Listing | undefined;
     setListings((prev) => {
-      const next = prev.map((l) => (l.id === id ? { ...l, ...patch } : l));
+      const next = prev.map((l) => {
+        if (l.id === id) {
+          updatedListing = { ...l, ...patch };
+          return updatedListing;
+        }
+        return l;
+      });
       persist(next);
       return next;
     });
@@ -177,6 +237,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     // Cloud firestore update
     if (isFirebaseConfigured) {
       updateListingInFirestore(id, patch);
+    }
+
+    // Notify local Admin portal
+    if (updatedListing) {
+      notifyAdminBridge(updatedListing, "update");
     }
   }, []);
 

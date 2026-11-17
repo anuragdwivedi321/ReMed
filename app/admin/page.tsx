@@ -48,6 +48,34 @@ export default function AdminPage() {
             Verify photos, inspect OCR expiry dates, set final payout prices, and advance stages.
           </p>
         </div>
+        <a
+          href="http://localhost:3001"
+          target="_blank"
+          rel="noreferrer"
+          className="rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm px-4 py-2.5 shadow-md flex items-center gap-2 border border-slate-700 transition-all"
+        >
+          <span>🚀 Open Dedicated Admin Portal (3001)</span>
+          <ArrowRight size={14} />
+        </a>
+      </div>
+
+      <div className="mt-4 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 p-4 sm:p-5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-slate-700 shadow-md">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Dedicated Operations Command Center</span>
+          </div>
+          <h3 className="text-base sm:text-lg font-bold font-display mt-0.5">Standalone Admin Portal Running on Port 3001</h3>
+          <p className="text-xs text-slate-300 mt-0.5">Equipped with real-time sound bell, customer dossier, Google Maps direct navigation, and 1-click UPI payouts.</p>
+        </div>
+        <a
+          href="http://localhost:3001"
+          target="_blank"
+          rel="noreferrer"
+          className="shrink-0 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:brightness-110 active:scale-95 transition-all"
+        >
+          Launch Portal (Port 3001) &rarr;
+        </a>
       </div>
 
       <p className="mt-4 text-xs font-medium text-slate-400 lg:hidden flex items-center gap-1.5">

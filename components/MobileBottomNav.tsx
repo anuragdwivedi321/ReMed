@@ -243,6 +243,18 @@ export default function MobileBottomNav() {
             {/* Menu List */}
             <div className="mt-4 space-y-1.5">
               <Link
+                href="/rider"
+                onClick={() => setShowMore(false)}
+                className="flex items-center justify-between rounded-xl bg-sky-50/80 border border-sky-200/80 p-3 text-sm font-bold text-[#0072d2] hover:bg-sky-100/70 transition-colors"
+              >
+                <span className="flex items-center gap-3">
+                  <span className="text-lg">🚚</span>
+                  {t("Rider Pickup Partner Portal", "राइडर पिकअप पार्टनर पोर्टल")}
+                </span>
+                <ArrowRight size={16} className="text-[#0072d2]" />
+              </Link>
+
+              <Link
                 href="/#features"
                 onClick={() => setShowMore(false)}
                 className="flex items-center justify-between rounded-xl p-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"

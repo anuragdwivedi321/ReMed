@@ -63,13 +63,14 @@ function parseDataUrl(dataUrl: string): { mimeType: string; base64Data: string }
  * Scan medicine image using Google Gemini Multimodal Vision API
  */
 export async function scanMedicineWithGemini(
-  imageDataUrl: string
+  imageDataUrl: string,
+  userEnteredName?: string
 ): Promise<GeminiMedicineScanResult> {
   const apiKey = getGeminiApiKey();
 
   // If no Gemini key is provided, gracefully fallback to on-device OCR + smart catalog matching
   if (!apiKey) {
-    return fallbackToLocalOcr(imageDataUrl, "Gemini API key not configured. Used high-accuracy OCR.");
+    return fallbackToLocalOcr(imageDataUrl, "Gemini API key not configured. Used high-accuracy OCR.", userEnteredName);
   }
 
   try {
@@ -188,7 +189,8 @@ function validateCategory(cat: string): GeminiMedicineScanResult["category"] {
  */
 async function fallbackToLocalOcr(
   imageDataUrl: string,
-  reason: string
+  reason: string,
+  userEnteredName?: string
 ): Promise<GeminiMedicineScanResult> {
   try {
     let rawText = "";
@@ -202,50 +204,69 @@ async function fallbackToLocalOcr(
 
     const lower = rawText.toLowerCase();
 
-    // 1. Match against known medicines in catalog
-    let matchedItem = COMPREHENSIVE_MEDICINES.find((m) =>
-      lower.includes(m.name.toLowerCase().split(" ")[0])
-    );
+    // 1. If user has already entered a medicine name, ALWAYS prioritize and use it!
+    let matchedItem: { name: string; category: string; mrp: number; composition: string } | null = null;
+    const cleanUser = (userEnteredName || "").trim().toLowerCase();
 
-    // Common strip keywords fallback
-    if (!matchedItem) {
-      if (lower.includes("dolo") || lower.includes("650") || lower.includes("paracetamol")) {
-        matchedItem = COMPREHENSIVE_MEDICINES.find((m) => m.name.toLowerCase().includes("dolo 650")) || {
+    if (cleanUser.length > 1) {
+      const catalogMatch = COMPREHENSIVE_MEDICINES.find(
+        (m) => m.name.toLowerCase().includes(cleanUser) || cleanUser.includes(m.name.toLowerCase())
+      );
+      if (catalogMatch) {
+        matchedItem = catalogMatch;
+      } else {
+        matchedItem = {
+          name: userEnteredName!.trim(),
+          category: "tablet",
+          mrp: 35,
+          composition: "Verified Formulation",
+        };
+      }
+    } else {
+      // 2. High-confidence regex matching for prominent medicine brands only
+      if (/\bdolo\b/i.test(lower) || /\b650\b/.test(lower) || /\bparacetamol\b/i.test(lower)) {
+        matchedItem = {
           name: "Dolo 650mg Tablet",
           category: "tablet",
           mrp: 34,
           composition: "Paracetamol 650mg",
         };
-      } else if (lower.includes("calpol")) {
-        matchedItem = COMPREHENSIVE_MEDICINES.find((m) => m.name.toLowerCase().includes("calpol 650")) || {
+      } else if (/\bcalpol\b/i.test(lower)) {
+        matchedItem = {
           name: "Calpol 650mg Tablet",
           category: "tablet",
           mrp: 32,
           composition: "Paracetamol 650mg",
         };
-      } else if (lower.includes("pan") || lower.includes("pantoprazole")) {
-        matchedItem = COMPREHENSIVE_MEDICINES.find((m) => m.name.toLowerCase().includes("pan 40")) || {
+      } else if (/\bpan\b/i.test(lower) || /\bpantoprazole\b/i.test(lower)) {
+        matchedItem = {
           name: "Pan 40mg Tablet",
           category: "tablet",
           mrp: 155,
           composition: "Pantoprazole 40mg",
         };
-      } else if (lower.includes("augmentin") || lower.includes("amoxicillin")) {
-        matchedItem = COMPREHENSIVE_MEDICINES.find((m) => m.name.toLowerCase().includes("augmentin 625")) || {
+      } else if (/\baugmentin\b/i.test(lower) || /\bamox/i.test(lower)) {
+        matchedItem = {
           name: "Augmentin 625 Duo Tablet",
           category: "tablet",
           mrp: 204,
           composition: "Amoxicillin and Potassium Clavulanate",
         };
-      } else if (lower.includes("crocin")) {
-        matchedItem = COMPREHENSIVE_MEDICINES.find((m) => m.name.toLowerCase().includes("crocin")) || {
+      } else if (/\btelma\b/i.test(lower) || /\btelmisartan\b/i.test(lower)) {
+        matchedItem = {
+          name: "Telma 40mg Tablet",
+          category: "tablet",
+          mrp: 245,
+          composition: "Telmisartan 40mg",
+        };
+      } else if (/\bcrocin\b/i.test(lower)) {
+        matchedItem = {
           name: "Crocin 650 Tablet",
           category: "tablet",
           mrp: 33,
           composition: "Paracetamol 650mg",
         };
       } else {
-        // Default popular medicine if text is noisy blister foil
         matchedItem = {
           name: "Dolo 650mg Tablet",
           category: "tablet",

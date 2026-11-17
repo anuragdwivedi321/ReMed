@@ -53,6 +53,7 @@ const LINKS = [
   { href: "/#calculator", labelEn: "Price Calculator", labelHi: "कैलकुलेटर" },
   { href: "/#features", labelEn: "Features", labelHi: "फीचर्स" },
   { href: "/dashboard", labelEn: "My Listings", labelHi: "मेरी लिस्टिंग्स" },
+  { href: "/rider", labelEn: "Rider Portal", labelHi: "राइडर पोर्टल" },
   { href: "/about", labelEn: "About", labelHi: "हमारे बारे में" },
   { href: "/contact", labelEn: "Contact", labelHi: "संपर्क" },
 ];
@@ -144,12 +145,23 @@ export default function Navbar() {
           </div>
 
           {user?.isAdmin && (
-            <Link
-              href="/admin"
-              className="flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors border border-purple-200"
-            >
-              <Shield size={13} /> Admin
-            </Link>
+            <div className="flex items-center gap-1.5">
+              <Link
+                href="/admin"
+                className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors border border-purple-200"
+              >
+                <Shield size={13} /> Admin
+              </Link>
+              <a
+                href="http://localhost:3001"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 transition-colors border border-slate-700 shadow-xs"
+                title="Open Standalone Admin Portal on Port 3001"
+              >
+                🚀 Portal (3001)
+              </a>
+            </div>
           )}
 
           {user ? (

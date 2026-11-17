@@ -83,6 +83,9 @@ export interface Listing {
   payoutTimestamp?: string;
   aiConfidence?: number;
   aiSource?: "gemini" | "tesseract" | "tesseract_fallback" | "manual";
+  userName?: string;
+  userPhone?: string;
+  userEmail?: string;
 }
 
 export interface AppUser {

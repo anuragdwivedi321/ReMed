@@ -231,15 +231,21 @@ export default function MedicineForm() {
       );
 
       try {
-        const result = await scanMedicineWithGemini(latestPhoto!.dataUrl);
+        const result = await scanMedicineWithGemini(latestPhoto!.dataUrl, medicineName);
         if (cancelled) return;
 
         if (result.success) {
           setAiScanData(result);
 
-          // Auto-fill Medicine Name
+          // Auto-fill Medicine Name ONLY if user has NOT entered a medicine name yet!
           if (result.medicineName) {
-            setMedicineName(result.medicineName);
+            setMedicineName((prev) => {
+              if (prev && prev.trim().length > 0) {
+                // Keep whatever user explicitly entered (e.g. Dolo)!
+                return prev;
+              }
+              return result.medicineName;
+            });
           }
 
           // Auto-fill Category
@@ -351,6 +357,9 @@ export default function MedicineForm() {
       genericComposition: aiScanData?.genericComposition || undefined,
       aiConfidence: aiScanData?.confidence || undefined,
       aiSource: aiScanData?.source || (hasGeminiKey ? "gemini" : "manual"),
+      userName: user?.name || "Verified Customer",
+      userPhone: user?.phoneNumber || user?.identifier || "+91 98765 43210",
+      userEmail: user?.email || undefined,
     };
 
     createListing(listing);
