@@ -147,6 +147,13 @@ export default function Navbar() {
           {user?.isAdmin && (
             <div className="flex items-center gap-1.5">
               <Link
+                href="/operations"
+                className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 transition-colors border border-slate-700 shadow-xs"
+                title="Operations Command Center"
+              >
+                ⚡ Operations
+              </Link>
+              <Link
                 href="/admin"
                 className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors border border-purple-200"
               >
