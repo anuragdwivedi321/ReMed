@@ -191,17 +191,26 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       }
     } catch {}
 
-    // Send to Admin Portal HTTP Bridge on port 3001
+    // Send to Cloud Admin API (/api/sync) for global instant sync
     try {
-      fetch("http://localhost:3001/api/sync", {
+      fetch("/api/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, listing }),
-        mode: "cors",
-      }).catch(() => {
-        // Safe to ignore if admin portal on 3001 is offline
-      });
+      }).catch(() => {});
     } catch {}
+
+    // Also notify local port 3001 if testing locally on localhost
+    if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+      try {
+        fetch("http://localhost:3001/api/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action, listing }),
+          mode: "cors",
+        }).catch(() => {});
+      } catch {}
+    }
   };
 
   const createListing = useCallback((listing: Listing) => {

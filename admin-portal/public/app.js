@@ -132,7 +132,7 @@ function initRealtimeStream() {
   }
 }
 
-// 3. Load initial listings
+// 3. Load initial listings & activate real-time cloud polling
 async function loadListings() {
   try {
     const res = await fetch("/api/listings");
@@ -143,6 +143,32 @@ async function loadListings() {
     console.warn("Could not fetch listings:", err);
   }
   renderDashboard();
+
+  // Smart Live Polling every 3s (Guarantees instant sync from Customer Portal to Admin globally)
+  setInterval(async () => {
+    try {
+      const res = await fetch("/api/listings");
+      if (res.ok) {
+        const freshListings = await res.json();
+        let hasNewOrder = false;
+
+        for (const item of freshListings) {
+          if (!allListings.some((existing) => existing.id === item.id)) {
+            hasNewOrder = true;
+            item._isNew = true;
+          }
+        }
+
+        if (hasNewOrder) {
+          console.log("⚡ [NEW ORDER DETECTED VIA CLOUD SYNC] Ringing chime!");
+          playOrderChime();
+        }
+
+        allListings = freshListings;
+        renderDashboard();
+      }
+    } catch {}
+  }, 3000);
 }
 
 // 4. Update Statistics KPI Counters

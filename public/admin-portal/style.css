@@ -1,0 +1,53 @@
+/* Custom scrollbars */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.6);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.8);
+}
+
+/* Tab active state */
+.filter-tab.active-tab {
+  background-color: #0072d2;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 114, 210, 0.3);
+}
+
+/* Pulsing highlight for newly arrived orders */
+@keyframes newOrderGlow {
+  0% {
+    border-color: #38bdf8;
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.5);
+    transform: scale(1.008);
+  }
+  50% {
+    border-color: #0284c7;
+    box-shadow: 0 0 15px rgba(2, 132, 199, 0.3);
+  }
+  100% {
+    border-color: #334155;
+    box-shadow: none;
+    transform: scale(1);
+  }
+}
+
+.new-order-highlight {
+  animation: newOrderGlow 4s ease-out forwards;
+}
+
+/* Card hover transitions */
+.order-card {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.order-card:hover {
+  border-color: #475569;
+}
